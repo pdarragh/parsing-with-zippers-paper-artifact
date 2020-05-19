@@ -1,0 +1,243 @@
+# Transformed Grammar for Python
+
+# This grammar is based on the original Python 3.4 grammar. It is meant to be
+# equivalent, but less ambiguous.
+#
+# Rule names spelled with a leading underscore _ are the result of extracting
+# patterns from the original grammar and reducing them to remove shift/reduce
+# and reduce/reduce conflicts. This grammar is intended to have no conflicts.
+
+single_input: NEWLINE | simple_stmt | compound_stmt NEWLINE
+file_input: (NEWLINE | stmt)* ENDMARKER
+eval_input: testlist NEWLINE* ENDMARKER
+
+decorator: '@' dotted_name [ '(' [arglist] ')' ] NEWLINE
+decorators: decorator+
+decorated: decorators (classdef | funcdef)
+funcdef: 'def' NAME parameters ['->' test] ':' suite
+parameters: '(' [typedargslist] ')'
+typedargslist:
+    _posargslist
+  | _starargslist
+  | _kwarg
+_posargslist:
+    _posarg
+  | _posarg ',' [ _posargslist | _starargslist | _kwarg ]
+_starargslist:
+    _stararg [',' _poskwargslist]
+_poskwargslist:
+    _posarg [',' _poskwargslist]
+  | _kwarg
+_stararg: '*' [tfpdef]
+_kwarg: '**' tfpdef
+_posarg: tfpdef ['=' test]
+tfpdef: NAME [':' test]
+varargslist:
+    _var_posargslist
+  | _var_starargslist
+  | _var_kwarg
+_var_posargslist:
+    _var_posarg
+  | _var_posarg ',' [ _var_posargslist | _var_starargslist | _var_kwarg ]
+_var_starargslist:
+    _var_stararg [',' _var_poskwargslist]
+_var_poskwargslist:
+    _var_posarg [',' _var_poskwargslist]
+  | _var_kwarg
+_var_stararg: '*' [vfpdef]
+_var_kwarg: '**' vfpdef
+_var_posarg: vfpdef ['=' test]
+vfpdef: NAME
+
+stmt:
+    simple_stmt
+  | compound_stmt
+simple_stmt: small_stmt _small_stmt_semi_lst NEWLINE
+_small_stmt_semi_lst:
+    [';']
+  | ';' small_stmt _small_stmt_semi_lst
+small_stmt:
+    expr_stmt
+  | del_stmt
+  | pass_stmt
+  | flow_stmt
+  | import_stmt
+  | global_stmt
+  | nonlocal_stmt
+  | assert_stmt
+expr_stmt: testlist_star_expr (augassign (yield_expr | testlist) |
+                     ('=' (yield_expr | testlist_star_expr))*)
+testlist_star_expr: (test | star_expr) _test_starexpr_comma_lst
+_test_starexpr_comma_lst:
+    [',']
+  | ',' (test | star_expr) _test_starexpr_comma_lst
+augassign:
+    '+='
+  | '-='
+  | '*='
+  | '/='
+  | '%='
+  | '&='
+  | '|='
+  | '^='
+  | '<<='
+  | '>>='
+  | '**='
+  | '//='
+del_stmt: 'del' exprlist
+pass_stmt: 'pass'
+flow_stmt:
+    break_stmt
+  | continue_stmt
+  | return_stmt
+  | raise_stmt
+  | yield_stmt
+break_stmt: 'break'
+continue_stmt: 'continue'
+return_stmt: 'return' [testlist]
+yield_stmt: yield_expr
+raise_stmt: 'raise' [test ['from' test]]
+import_stmt:
+    import_name
+  | import_from
+import_name: 'import' dotted_as_names
+import_from: ('from' (dotted_name | ('.' | '...')+ [dotted_name])
+              'import' ('*' | '(' import_as_names ')' | import_as_names))
+import_as_name: NAME ['as' NAME]
+dotted_as_name: dotted_name ['as' NAME]
+import_as_names: import_as_name _import_as_name_comma_lst
+_import_as_name_comma_lst:
+    [',']
+  | ',' import_as_name _import_as_name_comma_lst
+dotted_as_names: dotted_as_name (',' dotted_as_name)*
+dotted_name: NAME ('.' NAME)*
+global_stmt: 'global' NAME (',' NAME)*
+nonlocal_stmt: 'nonlocal' NAME (',' NAME)*
+assert_stmt: 'assert' test [',' test]
+
+compound_stmt:
+    if_stmt
+  | while_stmt
+  | for_stmt
+  | try_stmt
+  | with_stmt
+  | funcdef
+  | classdef
+  | decorated
+if_stmt: 'if' test ':' suite ('elif' test ':' suite)* ['else' ':' suite]
+while_stmt: 'while' test ':' suite ['else' ':' suite]
+for_stmt: 'for' exprlist 'in' testlist ':' suite ['else' ':' suite]
+try_stmt: ('try' ':' suite
+           ((except_clause ':' suite)+
+            ['else' ':' suite]
+            ['finally' ':' suite] |
+           'finally' ':' suite))
+with_stmt: 'with' with_item (',' with_item)*  ':' suite
+with_item: test ['as' expr]
+except_clause: 'except' [test ['as' NAME]]
+suite:
+    simple_stmt
+  | NEWLINE INDENT stmt+ DEDENT
+
+test:
+    or_test ['if' or_test 'else' test]
+  | lambdef
+test_nocond:
+    or_test
+  | lambdef_nocond
+lambdef: 'lambda' [varargslist] ':' test
+lambdef_nocond: 'lambda' [varargslist] ':' test_nocond
+or_test: and_test ('or' and_test)*
+and_test: not_test ('and' not_test)*
+not_test:
+    'not' not_test
+  | comparison
+comparison: expr (comp_op expr)*
+comp_op:
+    '<'
+  | '>'
+  | '=='
+  | '>='
+  | '<='
+  | '<>'
+  | '!='
+  | 'in'
+  | 'not' 'in'
+  | 'is'
+  | 'is' 'not'
+star_expr: '*' expr
+expr: xor_expr ('|' xor_expr)*
+xor_expr: and_expr ('^' and_expr)*
+and_expr: shift_expr ('&' shift_expr)*
+shift_expr: arith_expr (('<<' | '>>') arith_expr)*
+arith_expr: term (('+' | '-') term)*
+term: factor (('*' | '/' | '%' | '//') factor)*
+factor:
+    ('+' | '-' | '~') factor
+  | power
+power: atom trailer* ['**' factor]
+atom:
+    '(' [yield_expr | testlist_comp] ')'
+  | '[' [testlist_comp] ']'
+  | '{' [dictorsetmaker] '}'
+  | NAME
+  | NUMBER
+  | STRING+
+  | '...'
+  | 'None'
+  | 'True'
+  | 'False'
+testlist_comp: (test | star_expr) (comp_for | _test_starexpr_comma_lst)
+trailer:
+    '(' [arglist] ')'
+  | '[' subscriptlist ']'
+  | '.' NAME
+subscriptlist: subscript _subscript_comma_lst
+_subscript_comma_lst:
+    [',']
+  | ',' subscript _subscript_comma_lst
+subscript:
+    test
+  | [test] ':' [test] [sliceop]
+sliceop: ':' [test]
+exprlist: (expr | star_expr) _expr_starexpr_comma_lst
+_expr_starexpr_comma_lst:
+    [',']
+  | ',' (expr | star_expr) _expr_starexpr_comma_lst
+testlist: test _test_comma_lst
+_test_comma_lst:
+    [',']
+  | ',' test _test_comma_lst
+dictorsetmaker:
+    (test ':' test (comp_for | _test_colon_test_comma_lst))
+  | (test (comp_for | _test_comma_lst))
+_test_colon_test_comma_lst:
+    [',']
+  | ',' test ':' test _test_colon_test_comma_lst
+_test_comma_lst:
+    [',']
+  | ',' test _test_comma_lst
+
+classdef: 'class' NAME ['(' [arglist] ')'] ':' suite
+
+arglist:
+    argument [',' [arglist]]
+  | '*' test [_startestlist]
+  | '**' test
+_startestlist:
+    ',' argument [_startestlist]
+  | ',' '**' test
+
+argument:
+    test [comp_for]
+  | test '=' test  # Really [keyword '='] test
+comp_iter:
+    comp_for
+  | comp_if
+comp_for: 'for' exprlist 'in' or_test [comp_iter]
+comp_if: 'if' test_nocond [comp_iter]
+
+yield_expr: 'yield' [yield_arg]
+yield_arg:
+    'from' test
+  | testlist

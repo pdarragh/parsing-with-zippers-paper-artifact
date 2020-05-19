@@ -1,0 +1,74 @@
+from pwz_bench.utility import *
+
+from itertools import chain
+from typing import List
+
+
+__all__ = ['gen_pwz_nary_look_pygram_ml']
+
+
+PWZ_NARY_LOOK_PYGRAM_ML = """\
+open Pytokens
+open Pwz_nary_look
+
+let rec {grammar_rules}
+
+let tok_grammars = [ {tok_grammars} ]
+
+let () = compute_parents_from_roots [ {start_symbols} ]
+
+let () = compute_lookahead tok_grammars
+"""
+
+
+M_BOT = 'm_bottom'
+
+
+def gen_pwz_nary_look_pygram_ml(desc: GrammarDescription) -> List[str]:
+    prefix = 'pwz_nary_look_rule_'
+    no_tokens = sum(map(len, (desc.tokens.named, desc.tokens.nameless, desc.tokens.typed)))
+    lines = PWZ_NARY_LOOK_PYGRAM_ML.format(
+        grammar_rules='\n    and '.join(chain(
+            (f"{prefix}{token} = {{ m = {M_BOT}; e = Tok {token_pair_of_token(token)}; "
+             f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"
+             for token in chain(desc.tokens.named,
+                                desc.tokens.nameless,
+                                map(lambda p: p[0], desc.tokens.typed))),
+            map(lambda r: generate_pygram_rule(r, desc, prefix, no_tokens), desc.base_grammar.rules)
+        )),
+        tok_grammars='; '.join(f'{prefix}{token}' for token in chain(desc.tokens.named,
+                                                                           desc.tokens.nameless,
+                                                                           map(lambda p: p[0], desc.tokens.typed))),
+        start_symbols='; '.join(f'{prefix}{start_symbol}' for start_symbol in desc.start_symbols),
+    ).split('\n')
+    return lines
+
+
+def generate_pygram_rule(rule: Rule, desc: GrammarDescription, prefix: str, no_tokens: int) -> str:
+    if len(rule.groups) != 1:
+        raise RuntimeError(f"Rule {rule.name} has {len(rule.groups)} groups; expected 1.")
+    group = rule.groups[0]
+    if len(group.productions) == 1:
+        return f"{prefix}{rule.name} = {str_of_production(group.productions[0], desc, prefix, rule.name, no_tokens)}"
+    else:
+        production_strings = map(lambda p: str_of_production(p[1], desc, prefix, rule.name, no_tokens, p[0]),
+                                 enumerate(group.productions, start=1))
+        return f"{prefix}{rule.name} = {{ m = {M_BOT}; e = Alt (ref [ {'; '.join(production_strings)} ]);" \
+            f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"
+
+
+def str_of_production(production: Production, desc: GrammarDescription, prefix: str, rule_name: str, no_tokens: int,
+                      production_no: int = 0) -> str:
+    parts: List[str] = []
+    for component in production.components:
+        if isinstance(component, Terminal):
+            parts.append(prefix + desc.terminal_names[component])
+        elif isinstance(component, NonTerminal):
+            parts.append(prefix + component.name)
+        else:
+            raise RuntimeError(f"Invalid component instance in production of class {component.__class__.__name__}.")
+    production_name = rule_name
+    if production_no > 0:
+        production_name += f"-{production_no}"
+    return f"{{ m = {M_BOT}; e = Seq (\"{production_name}\", [ {'; '.join(parts)} ]);" \
+        f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"
