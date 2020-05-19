@@ -1,0 +1,15 @@
+- Deriving Slowly:
+  - http://rgrinberg.com/posts/deriving-slowly/
+- A Tutorial to OCaml -ppx Language Extensions
+  - https://victor.darvariu.me/jekyll/update/2018/06/19/ppx-tutorial.html
+- An introduction to OCaml PPX ecosystem
+  - this is the one I made the most progress with
+  - https://tarides.com/blog/2019-05-09-an-introduction-to-ocaml-ppx-ecosystem
+- ppxlib Documentation
+  - https://readthedocs.org/projects/ppxlib/downloads/pdf/latest/
+- ppxlib/src/ast_builder_intf.ml
+  - https://github.com/ocaml-ppx/ppxlib/blob/2d92deb88e9501ed33897edb88a15be75d10f82d/src/ast_builder_intf.ml
+- ppxlib/metaquot/ppxlib_metaquot.ml
+  - https://github.com/ocaml-ppx/ppxlib/blob/2d92deb88e9501ed33897edb88a15be75d10f82d/metaquot/ppxlib_metaquot.ml
+- ppx_enumerate/src/ppx_enumerate.ml
+  - https://github.com/janestreet/ppx_enumerate/blob/master/src/ppx_enumerate.ml
