@@ -33,17 +33,17 @@ dependencies are needed:
 
 `opam switch install 4.05.0` `opam install core core_bench menhir dypgen`
 
-- [Core](https://ocaml.janestreet.com/ocaml-core/latest/doc/core/index.html)
-  (`core`), v 0.11.3
+- [Core](https://ocaml.janestreet.com/ocaml-core/latest/doc/core/index.html),
+  v 0.11.3
     - Core is an improved standard library for OCaml, managed by Jane Street. We
       mostly use this for managing command-line options and association lists.
 - [Core_bench](https://ocaml.janestreet.com/ocaml-core/latest/doc/core_bench/Core_bench/index.html),
   v 0.11.0
     - A micro-benchmarking library for OCaml, managed by Jane Street. This is
       used for all benchmarking.
-- [Menhir], v 20200211
+- [Menhir](http://gallium.inria.fr/~fpottier/menhir/), v 20200211
     - LR(1) parser generator for OCaml. We use this to compare performance.
-- [Dypgen], v 20120619-1
+- [Dypgen](http://dypgen.free.fr), v 20120619-1
     - GLR parser generator for OCaml. We use this to compare performance.
 
 ## Running
