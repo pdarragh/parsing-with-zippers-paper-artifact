@@ -115,7 +115,7 @@ prepare:
 	$(PYTHON) $(driver) prepare --py-file-dir $(PY_FILE_DIR) --tgz-filename $(TGZ_FILE)
 	@echo Preparation done.
 
-lex: prepare
+lex:
 	$(call ensure_defined,PY_FILE_DIR)
 	$(call ensure_defined,LEX_FILE_DIR)
 	@echo Lexing all .py files in $(PY_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
