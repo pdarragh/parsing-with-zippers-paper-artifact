@@ -25,6 +25,7 @@ endef
 
 driver := pwz_bench.py
 mkfile_abs_dir := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+MKDIR_P := mkdir -p
 
 PYTHON ?= python3
 
@@ -109,38 +110,46 @@ build: build-bench build-parse
 profile: generate
 	$(MAKE) -C $(OUT_DIR) profile
 
-prepare:
-	$(call ensure_defined,PY_FILE_DIR)
+$(PY_FILE_DIR):
+	$(MKDIR_P) $@
+
+$(LEX_FILE_DIR):
+	$(MKDIR_P) $@
+
+$(BENCH_FILE_DIR):
+	$(MKDIR_P) $@
+
+$(AST_FILE_DIR):
+	$(MKDIR_P) $@
+
+prepare: $(PY_FILE_DIR)
 	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PY_FILE_DIR)...
 	$(PYTHON) $(driver) prepare --py-file-dir $(PY_FILE_DIR) --tgz-filename $(TGZ_FILE) --force-extract
 	@echo Preparation done.
 
-lex:
-	$(call ensure_defined,PY_FILE_DIR)
-	$(call ensure_defined,LEX_FILE_DIR)
+lex: $(LEX_FILE_DIR)
+	if [ ! -d "$(PY_FILE_DIR)" ]; then echo "$(PY_FILE_DIR) does not exist!"; exit 1; fi
 	@echo Lexing all .py files in $(PY_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
 	$(PYTHON) $(driver) lex --py-file-dir $(PY_FILE_DIR) --lex-file-dir $(LEX_FILE_DIR)
 	@echo Lexing done.
 
-benchmark: build-bench
-	$(call ensure_defined,LEX_FILE_DIR)
-	$(call ensure_defined,BENCH_FILE_DIR)
+benchmark: $(BENCH_FILE_DIR) build-bench
+	if [ ! -d "$(LEX_FILE_DIR)" ]; then echo "$(LEX_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval lex_files := $(wildcard $(LEX_FILE_DIR)/*.lex))
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
 	$(PYTHON) $(driver) benchmark --quota-factor $(QUOTA_FACTOR) --resume --lex-file-dir $(LEX_FILE_DIR) --bench-file-dir $(BENCH_FILE_DIR) $(parser_opts) --max-quota $(MAX_QUOTA)
 
 post-process:
-	$(call ensure_defined,BENCH_FILE_DIR)
+	if [ ! -d "$(BENCH_FILE_DIR)" ]; then echo "$(BENCH_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
 	$(PYTHON) $(driver) post-process --overwrite --bench-file-dir $(BENCH_FILE_DIR) $(parser_opts)
 
-parse: build-parse
-	$(call ensure_defined,AST_FILE_DIR)
-	$(call ensure_defined,LEX_FILE_DIR)
+parse: $(AST_FILE_DIR) build-parse
+	if [ ! -d "$(LEX_FILE_DIR)" ]; then echo "$(LEX_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(PARSE_PARSERS)))
 	$(PYTHON) $(driver) parse --lex-file-dir $(LEX_FILE_DIR) --ast-file-dir $(AST_FILE_DIR) $(parser_opts) --timeout $(TIMEOUT)
 
 verify:
-	$(call ensure_defined,AST_FILE_DIR)
+	if [ ! -d "$(AST_FILE_DIR)" ]; then echo "$(AST_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(VERIFY_PARSERS)))
 	$(PYTHON) $(driver) verify --ast-file-dir $(AST_FILE_DIR) $(parser_opts)
