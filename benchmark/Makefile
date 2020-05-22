@@ -7,6 +7,7 @@
 .PHONY: clean-all
 .PHONY: clean-lex
 .PHONY: clean-parse
+.PHONY: clean-py
 .PHONY: default
 .PHONY: generate
 .PHONY: lex
@@ -15,21 +16,31 @@
 .PHONY: prepare
 .PHONY: verify
 
+# Checks whether a given variable is non-empty.
+define ensure_defined
+	$(if $($(1)),\
+		,\  # This is where the then-branch would be if there were one.
+		$(error $(1) is empty))
+endef
+
 driver := pwz_bench.py
 mkfile_abs_dir := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
+
+PYTHON ?= python3
 
 VERIFY_PARSERS ?= dypgen pwz_nary pwz_nary_look pwz_nary_mem pwz_binary pwd_binary pwd_binary_opt pwd_nary pwd_nary_opt
 PARSE_PARSERS ?= menhir $(VERIFY_PARSERS)
 BENCH_PARSERS ?= $(PARSE_PARSERS)
-PYTHON ?= python3
-GRAMMAR ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
-START_SYMBOLS ?= single_input file_input eval_input
-OUT_DIR ?= $(mkfile_abs_dir)out
+
 TGZ_FILE ?= $(strip $(abspath $(mkfile_abs_dir)/Python-3.4.3.tgz))
+GRAMMAR_FILE ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
+START_SYMBOLS ?= single_input file_input eval_input
+OUT_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
 PY_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
+
 TIMEOUT ?= -1
 QUOTA_FACTOR ?= 3
 MAX_QUOTA ?= 1000
@@ -41,18 +52,11 @@ PARSE_OUT ?= $(OUT_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
-# Checks whether a given variable is non-empty.
-define ensure_defined
-	$(if $($(1)),\
-		,\  # This is where the then-branch would be if there were one.
-		$(error $(1) is empty))
-endef
-
 default: clean generate build
 
 all: clean clean-lex lex generate build
 
-clean-all: clean clean-lex clean-parse
+clean-all: clean clean-py clean-lex clean-parse
 
 clean:
 	@echo Cleaning...
@@ -62,6 +66,12 @@ clean:
 clean-light:
 	@echo Lightly cleaning...
 	$(MAKE) -C $(OUT_DIR) clean
+	@echo Clean complete.
+
+clean-py:
+	$(call ensure_defined,PY_FILE_DIR)
+	@echo Cleaning $(PY_FILE_DIR)...
+	$(RM) $(PY_FILE_DIR)/*.py
 	@echo Clean complete.
 
 clean-lex:
@@ -78,7 +88,7 @@ clean-parse:
 
 $(OUT_DIR)/Makefile:
 	@echo Generating output files in $(OUT_DIR)...
-	$(PYTHON) $(driver) generate $(GRAMMAR) $(start_symbol_opts) -d $(OUT_DIR) -p all
+	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) -d $(OUT_DIR) -p all
 	$(MAKE) -C $(OUT_DIR) generate
 	@echo File generation complete.
 
