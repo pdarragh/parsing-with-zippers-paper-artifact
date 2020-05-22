@@ -162,7 +162,7 @@ variable during the `make` process.
 We also include a transformed version of the Python 3.4 grammar specification in
 the file `./pwz_bench/utility/transformed-python-3.4.grammar`. The Python
 grammar specification as-given is heavily left-recursive, which is problematic
-for some parsers in this suite (such as Menhir, which is LR(1)**. We manually
+for some parsers in this suite (such as Menhir, which is LR(1)). We manually
 transformed this grammar specification to be non-left-recursive.
 
 ## Parsing
