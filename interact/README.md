@@ -9,7 +9,9 @@ To get started, we recommend running an interactive OCaml session using the file
 `repl.ml` as an initialization file. You can do this by doing
 `ocaml -init repl.ml`. (Or, if you have `utop` installed, `utop -init repl.ml`.
 We recommend using UTop if you have it, as it provides a significantly improved
-interactive OCaml interpreter.)
+interactive OCaml interpreter.) There are further instructions on how to
+interact with this REPL given once you initialize it according to these
+instructions.
 
 If you'd like to read the PwZ algorithm directly, please look in the `pwz.ml`
 file. The types used there are defined in `types.ml`.
