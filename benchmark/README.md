@@ -88,21 +88,24 @@ names here indicate targets which are depended upon by the current target,
 indicating that the current target uses all the parameters of the depended-upon
 target as well.
 
-| Target Name   | Summary                                                                                                 | Parameters Used                                         |
-|---------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| `default`     | Runs `clean`, `generate`, and `build`.                                                                  | `clean`, `generate`, `build`                            |
-| `all`         | Runs `clean`, `clean-lex` , `lex`, `generate`, and `build`.                                             | `clean`, `clean-lex`, `lex`, `generate`, `build`        |
-| `clean`       | Deletes the contents of `$OUT_DIR`.                                                                     | `$OUT_DIR`                                              |
-| `clean-lex`   | Deletes the contents of `$LEX_FILE_DIR`.                                                                | `$LEX_FILE_DIR`                                         |
-| `clean-parse` | Deletes the contents of `$AST_FILE_DIR`.                                                                | `$AST_FILE_DIR`                                         |
-| `clean-all`   | Runs `clean`, `clean-lex`, and `clean-parse`.                                                           | `clean`, `clean-lex`, `clean-parse`                     |
-| `generate`    | Generates all the files needed for compiling the executables. Code will be placed in `$OUT_DIR`.        | `$OUT_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                 |
-| `build`       | Compiles the executables, `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).               | `$BENCH_OUT`, `$PARSE_OUT`, `generate`                  |
-| `prepare`     | Extracts the necessary files from the Python source code tarball into `$PY_FILE_DIR`.                   | `$TGZ_FILE`, `$PY_FILE_DIR`                             |
-| `lex`         | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR` for later use. | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`               |
-| `benchmark`   | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                         | `$LEX_FILE_DIR`, `$BENCH_OUT`, `build`                  |
-| `parse`       | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.           | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`, `build` |
-| `verify`      | Verifies all existing `.ast` files against the Menhir baseline.                                         | `$AST_FILE_DIR`                                         |
+| Target Name      | Summary                                                                                                 | Parameters Used                                         |
+|------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
+| `default`        | Runs `clean-light`, `generate`, and `build`.                                                            | `clean`, `generate`, `build`                            |
+| `all`            | Runs `clean-all`, `prepare`, `lex`, `generate`, and `build`.                                            | `clean`, `clean-lex`, `lex`, `generate`, `build`        |
+| `clean-light`    | Runs the `clean` target in `$OUT_DIR/Makefile`.                                                         | `$OUT_DIR`                                              |
+| `clean-generate` | Deletes `$OUT_DIR`.                                                                                     |                                                         |
+| `clean-py`       | Deletes `$PY_FILE_DIR`.                                                                                 | `$PY_FILE_DIR`                                          |
+| `clean-lex`      | Deletes `$LEX_FILE_DIR`.                                                                                | `$LEX_FILE_DIR`                                         |
+| `clean-parse`    | Deletes `$AST_FILE_DIR`.                                                                                | `$AST_FILE_DIR`                                         |
+| `clean-bench`    | Deletes `$BENCH_FILE_DIR`.                                                                              | `$BENCH_FILE_DIR`                                       |
+| `clean-all`      | Runs `clean-generate`, `clean-py`, `clean-lex`, `clean-parse`, and `clean-bench`.                       | `clean`, `clean-lex`, `clean-parse`                     |
+| `generate`       | Generates all the files needed for compiling the executables. Code will be placed in `$OUT_DIR`.        | `$OUT_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                 |
+| `build`          | Compiles the executables, `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).               | `$BENCH_OUT`, `$PARSE_OUT`, `generate`                  |
+| `prepare`        | Extracts the necessary files from the Python source code tarball into `$PY_FILE_DIR`.                   | `$TGZ_FILE`, `$PY_FILE_DIR`                             |
+| `lex`            | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR` for later use. | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`               |
+| `benchmark`      | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                         | `$LEX_FILE_DIR`, `$BENCH_OUT`, `build`                  |
+| `parse`          | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.           | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`, `build` |
+| `verify`         | Verifies all existing `.ast` files against the Menhir baseline.                                         | `$AST_FILE_DIR`                                         |
 
 ### Parameters
 
