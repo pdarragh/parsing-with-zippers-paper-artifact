@@ -46,40 +46,45 @@ PARSE_OUT ?= $(OUT_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
-default: clean generate build
+default: clean-light generate build
 
-all: clean clean-lex lex generate build
+all: clean prepare lex generate build
 
-clean-all: clean clean-py clean-lex clean-parse
-
-clean:
-	@echo Cleaning...
-	$(RM) -r $(OUT_DIR)/*
-	@echo Clean complete.
+clean-all: clean-generate clean-py clean-lex clean-parse clean-bench
 
 clean-light:
 	@echo Lightly cleaning...
-	$(MAKE) -C $(OUT_DIR) clean
+	-$(MAKE) -C $(OUT_DIR) clean
 	@echo Clean complete.
+
+clean-generate:
+	@echo Removing $(OUT_DIR)...
+	-$(RM) -r $(OUT_DIR)
+	@echo Removal complete.
 
 clean-py:
-	@echo Cleaning $(PY_FILE_DIR)...
-	$(RM) $(PY_FILE_DIR)/*.py
-	@echo Clean complete.
+	@echo Removing $(PY_FILE_DIR)...
+	-$(RM) -r $(PY_FILE_DIR)
+	@echo Removal complete.
 
 clean-lex:
-	@echo Cleaning $(LEX_FILE_DIR)...
-	$(RM) $(LEX_FILE_DIR)/*.lex
-	@echo Clean complete.
+	@echo Removing $(LEX_FILE_DIR)...
+	-$(RM) -r $(LEX_FILE_DIR)
+	@echo Removal complete.
 
 clean-parse:
-	@echo Cleaning $(AST_FILE_DIR)...
-	$(RM) -r $(AST_FILE_DIR)/*
-	@echo Clean complete.
+	@echo Removing $(AST_FILE_DIR)...
+	-$(RM) -r $(AST_FILE_DIR)
+	@echo Removal complete.
+
+clean-bench:
+	@echo Removing $(BENCH_FILE_DIR)...
+	-$(RM) -r $(BENCH_FILE_DIR)
+	@echo Removal complete.
 
 $(OUT_DIR)/Makefile:
 	@echo Generating output files in $(OUT_DIR)...
-	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) -d $(OUT_DIR) -p all
+	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) --output-dir $(OUT_DIR) -p all
 	$(MAKE) -C $(OUT_DIR) generate
 	@echo File generation complete.
 
