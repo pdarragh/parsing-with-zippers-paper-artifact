@@ -112,7 +112,7 @@ profile: generate
 prepare:
 	$(call ensure_defined,PY_FILE_DIR)
 	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PY_FILE_DIR)...
-	$(PYTHON) $(driver) prepare --py-file-dir $(PY_FILE_DIR) --tgz-filename $(TGZ_FILE)
+	$(PYTHON) $(driver) prepare --py-file-dir $(PY_FILE_DIR) --tgz-filename $(TGZ_FILE) --force-extract
 	@echo Preparation done.
 
 lex:
