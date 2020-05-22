@@ -46,9 +46,9 @@ PARSE_OUT ?= $(OUT_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
-default: clean-light prepare generate build
+default: clean-light generate build
 
-all: clean prepare lex generate build
+all: clean-all prepare lex generate build
 
 clean-all: clean-generate clean-py clean-lex clean-parse clean-bench
 
