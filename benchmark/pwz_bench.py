@@ -14,9 +14,11 @@ ALL = 'all'
 
 THIS_FILE = Path(__file__).resolve()
 THIS_DIR = THIS_FILE.parent
+DEFAULT_TGZ_FILE = THIS_DIR / 'Python-3.4.3.tgz'
 DEFAULT_OUT_DIR = THIS_DIR / 'out'
 DEFAULT_BENCH = DEFAULT_OUT_DIR / 'pwz_bench'
 DEFAULT_PARSE = DEFAULT_OUT_DIR / 'pwz_parse'
+DEFAULT_PYS_DIR = THIS_DIR / 'pys'
 DEFAULT_LEX_DIR = THIS_DIR / 'lexes'
 DEFAULT_AST_DIR = THIS_DIR / 'parses'
 DEFAULT_BENCH_DIR = THIS_DIR / 'bench'
@@ -46,6 +48,10 @@ def process_parser_choices(choices: List[str]) -> List[ParserEnum]:
 
 def strs_of_parsers(parsers: List[ParserEnum]) -> List[str]:
     return [parser.value for parser in parsers]
+
+
+def prepare(args):
+    extract_input_files(args.output_dir, args.tgz_filename, args.force_extract)
 
 
 def lex(args):
@@ -103,6 +109,15 @@ def post_process(args):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers()
+
+    prepare_parser = subparsers.add_parser('prepare')
+    prepare_parser.add_argument('-t', '--tgz-filename', type=Path, default=DEFAULT_TGZ_FILE,
+                                help="the .tgz file of Python source code to extract inputs from")
+    prepare_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_PYS_DIR,
+                                help="the directory to move the extracted .py test files to")
+    prepare_parser.add_argument('-F', '--force-extract', action='store_true',
+                                help="force the extraction to proceed even if the destination directory contains .py files")
+    prepare_parser.set_defaults(func=prepare)
 
     lex_parser = subparsers.add_parser('lex')
     lex_parser.add_argument('filename', nargs='?',
