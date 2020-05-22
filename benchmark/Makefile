@@ -16,13 +16,6 @@
 .PHONY: prepare
 .PHONY: verify
 
-# Checks whether a given variable is non-empty.
-define ensure_defined
-	$(if $($(1)),\
-		,\  # This is where the then-branch would be if there were one.
-		$(error $(1) is empty))
-endef
-
 driver := pwz_bench.py
 mkfile_abs_dir := $(dir $(realpath $(firstword $(MAKEFILE_LIST))))
 MKDIR_P := mkdir -p
@@ -70,19 +63,16 @@ clean-light:
 	@echo Clean complete.
 
 clean-py:
-	$(call ensure_defined,PY_FILE_DIR)
 	@echo Cleaning $(PY_FILE_DIR)...
 	$(RM) $(PY_FILE_DIR)/*.py
 	@echo Clean complete.
 
 clean-lex:
-	$(call ensure_defined,LEX_FILE_DIR)
 	@echo Cleaning $(LEX_FILE_DIR)...
 	$(RM) $(LEX_FILE_DIR)/*.lex
 	@echo Clean complete.
 
 clean-parse:
-	$(call ensure_defined,AST_FILE_DIR)
 	@echo Cleaning $(AST_FILE_DIR)...
 	$(RM) -r $(AST_FILE_DIR)/*
 	@echo Clean complete.
