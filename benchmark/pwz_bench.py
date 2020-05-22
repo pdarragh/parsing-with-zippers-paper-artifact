@@ -18,7 +18,7 @@ DEFAULT_TGZ_FILE = THIS_DIR / 'Python-3.4.3.tgz'
 DEFAULT_OUT_DIR = THIS_DIR / 'out'
 DEFAULT_BENCH = DEFAULT_OUT_DIR / 'pwz_bench'
 DEFAULT_PARSE = DEFAULT_OUT_DIR / 'pwz_parse'
-DEFAULT_PYS_DIR = THIS_DIR / 'pys'
+DEFAULT_PY_DIR = THIS_DIR / 'pys'
 DEFAULT_LEX_DIR = THIS_DIR / 'lexes'
 DEFAULT_AST_DIR = THIS_DIR / 'parses'
 DEFAULT_BENCH_DIR = THIS_DIR / 'bench'
@@ -113,18 +113,18 @@ if __name__ == '__main__':
     prepare_parser = subparsers.add_parser('prepare')
     prepare_parser.add_argument('-t', '--tgz-filename', type=Path, default=DEFAULT_TGZ_FILE,
                                 help="the .tgz file of Python source code to extract inputs from")
-    prepare_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_PYS_DIR,
+    prepare_parser.add_argument('-O', '--output-dir', '--py-file-dir', type=Path, default=DEFAULT_PY_DIR,
                                 help="the directory to move the extracted .py test files to")
-    prepare_parser.add_argument('-F', '--force-extract', action='store_true',
+    prepare_parser.add_argument('--force-extract', action='store_true',
                                 help="force the extraction to proceed even if the destination directory contains .py files")
     prepare_parser.set_defaults(func=prepare)
 
     lex_parser = subparsers.add_parser('lex')
     lex_parser.add_argument('filename', nargs='?',
                             help="the Python file to lex")
-    lex_parser.add_argument('-I', '--input-dir',
+    lex_parser.add_argument('-I', '--input-dir', '--py-file-dir',
                             help="a directory to find .py files in to lex; must be used with -O/--output-dir")
-    lex_parser.add_argument('-O', '--output-dir',
+    lex_parser.add_argument('-O', '--output-dir', '--lex-file-dir',
                             help="a directory to output .lex files; must be used with -I/--input-dir")
     lex_parser.add_argument('--python-version',
                             help="the version of Python to use while lexing, as a string")
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                                  help="the grammar file to build a parser generator from")
     generate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                  help="the parser to generate; can be given more than once or left out to generate all")
-    generate_parser.add_argument('-d', '--output-dir', type=Path, default=DEFAULT_OUT_DIR,
+    generate_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_OUT_DIR,
                                  help="the directory to write all generated files to")
     generate_parser.add_argument('-s', '--start-symbol', action='append', dest='start_symbols',
                                  help="specify a non-terminal as a start symbol; can be given more than once")
@@ -151,9 +151,9 @@ if __name__ == '__main__':
     parse_parser = subparsers.add_parser('parse')
     parse_parser.add_argument('driver', type=Path, default=DEFAULT_PARSE, nargs='?',
                               help="the compiled parsing executable")
-    parse_parser.add_argument('-l', '--lex-file-dir', type=Path, default=DEFAULT_LEX_DIR,
+    parse_parser.add_argument('-I', '--input-dir', '--lex-file-dir', type=Path, default=DEFAULT_LEX_DIR,
                               help="the directory to read .lex files from")
-    parse_parser.add_argument('-a', '--ast-file-dir', type=Path, default=DEFAULT_AST_DIR,
+    parse_parser.add_argument('-O', '--output-dir', '--ast-file-dir', type=Path, default=DEFAULT_AST_DIR,
                               help="the directory to output parsers' .ast files to")
     parse_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                               help="the parser to use; can be given more than once or left out to run all parsers")
@@ -163,7 +163,7 @@ if __name__ == '__main__':
     parse_parser.set_defaults(func=parse)
 
     verify_parser = subparsers.add_parser('verify')
-    verify_parser.add_argument('-I', '--input-dir', type=Path, default=DEFAULT_AST_DIR,
+    verify_parser.add_argument('-I', '--input-dir', '--ast-file-dir', type=Path, default=DEFAULT_AST_DIR,
                                help="the directory to read parsed .ast files from")
     verify_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                help="the parser to verify; can be given more than once or left out to run all parsers")
@@ -172,9 +172,9 @@ if __name__ == '__main__':
     bench_parser = subparsers.add_parser('benchmark')
     bench_parser.add_argument('driver', type=Path, default=DEFAULT_BENCH, nargs='?',
                               help="the compiled benchmarking executable")
-    bench_parser.add_argument('-l', '--lex-file-dir', type=Path, default=DEFAULT_LEX_DIR,
+    bench_parser.add_argument('-I', '--input-dir', '--lex-file-dir', type=Path, default=DEFAULT_LEX_DIR,
                               help="the directory to read .lex files from")
-    bench_parser.add_argument('-b', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
+    bench_parser.add_argument('-O', '--output-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
                               help="the directory to output parsers' .bench files to")
     bench_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                               help="the parser to benchmark; can be given more than once or left out to run all parsers")
@@ -187,7 +187,7 @@ if __name__ == '__main__':
     bench_parser.set_defaults(func=benchmark)
 
     process_parser = subparsers.add_parser('post-process')
-    process_parser.add_argument('-b', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
+    process_parser.add_argument('-I', '--input-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
                                 help="the directory to retrieve completed benchmarking results from")
     process_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                 help="the parser to benchmark; can be given more than once or left out to run all parsers")

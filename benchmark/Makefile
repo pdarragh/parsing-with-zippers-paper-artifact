@@ -26,7 +26,7 @@ GRAMMAR ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
 START_SYMBOLS ?= single_input file_input eval_input
 OUT_DIR ?= $(mkfile_abs_dir)out
 TGZ_FILE ?= $(strip $(abspath $(mkfile_abs_dir)/Python-3.4.3.tgz))
-PYS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
+PY_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
@@ -100,16 +100,16 @@ profile: generate
 	$(MAKE) -C $(OUT_DIR) profile
 
 prepare:
-	$(call ensure_defined,PYS_FILE_DIR)
-	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PYS_FILE_DIR)...
-	$(PYTHON) $(driver) prepare -O $(PYS_FILE_DIR) -t $(TGZ_FILE)
+	$(call ensure_defined,PY_FILE_DIR)
+	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PY_FILE_DIR)...
+	$(PYTHON) $(driver) prepare --py-file-dir $(PY_FILE_DIR) --tgz-filename $(TGZ_FILE)
 	@echo Preparation done.
 
 lex: prepare
-	$(call ensure_defined,PYS_FILE_DIR)
+	$(call ensure_defined,PY_FILE_DIR)
 	$(call ensure_defined,LEX_FILE_DIR)
-	@echo Lexing all .py files in $(PYS_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
-	$(PYTHON) $(driver) lex -I $(PYS_FILE_DIR) -O $(LEX_FILE_DIR)
+	@echo Lexing all .py files in $(PY_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
+	$(PYTHON) $(driver) lex --py-file-dir $(PY_FILE_DIR) --lex-file-dir $(LEX_FILE_DIR)
 	@echo Lexing done.
 
 benchmark: build-bench
@@ -133,4 +133,4 @@ parse: build-parse
 verify:
 	$(call ensure_defined,AST_FILE_DIR)
 	$(eval parser_opts := $(patsubst %,-p %,$(VERIFY_PARSERS)))
-	$(PYTHON) $(driver) verify --input-dir $(AST_FILE_DIR) $(parser_opts)
+	$(PYTHON) $(driver) verify --ast-file-dir $(AST_FILE_DIR) $(parser_opts)
