@@ -12,6 +12,7 @@
 .PHONY: lex
 .PHONY: parse
 .PHONY: post-process
+.PHONY: prepare
 .PHONY: verify
 
 driver := pwz_bench.py
@@ -24,8 +25,9 @@ PYTHON ?= python3
 GRAMMAR ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
 START_SYMBOLS ?= single_input file_input eval_input
 OUT_DIR ?= $(mkfile_abs_dir)out
+TGZ_FILE ?= $(strip $(abspath $(mkfile_abs_dir)/Python-3.4.3.tgz))
+PYS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
-PY_FILE_DIR ?= $(LEX_FILE_DIR)
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
 TIMEOUT ?= -1
@@ -97,11 +99,17 @@ build: build-bench build-parse
 profile: generate
 	$(MAKE) -C $(OUT_DIR) profile
 
+prepare:
+	$(call ensure_defined,PYS_FILE_DIR)
+	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PYS_FILE_DIR)...
+	$(PYTHON) $(driver) prepare -O $(PYS_FILE_DIR) -t $(TGZ_FILE)
+	@echo Preparation done.
+
 lex:
 	$(call ensure_defined,PY_FILE_DIR)
 	$(call ensure_defined,LEX_FILE_DIR)
-	@echo Lexing all .py files in $(PY_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
-	$(PYTHON) $(driver) lex -I $(PY_FILE_DIR) -O $(LEX_FILE_DIR)
+	@echo Lexing all .py files in $(PYS_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
+	$(PYTHON) $(driver) lex -I $(PYS_FILE_DIR) -O $(LEX_FILE_DIR)
 	@echo Lexing done.
 
 benchmark: build-bench
