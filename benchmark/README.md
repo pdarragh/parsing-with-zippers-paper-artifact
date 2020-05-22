@@ -76,6 +76,10 @@ Note that this is a **long** process. Benchmarking on a dedicated cloud computer
 took nearly a full day. The `TIMEOUT` parameter can be adjusted according to the
 options detailed below if you wish to run a smaller sample benchmark.
 
+The benchmark process is smart, however. You can cancel the running benchmarks
+(by the typical `CTRL+c` / `<C-c>`) and later resume the benchmarks (via `make
+benchmark`) and it will pick up right where you left off.
+
 ### Targets
 
 The following targets are supported from the root directory, used as `make
@@ -155,7 +159,7 @@ variable during the `make` process.
 We also include a transformed version of the Python 3.4 grammar specification in
 the file `./pwz_bench/utility/transformed-python-3.4.grammar`. The Python
 grammar specification as-given is heavily left-recursive, which is problematic
-for some parsers in this suite (such as Menhir, which is LR(1)). We manually
+for some parsers in this suite (such as Menhir, which is LR(1)**. We manually
 transformed this grammar specification to be non-left-recursive.
 
 ## Parsing
