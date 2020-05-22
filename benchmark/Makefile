@@ -106,7 +106,7 @@ prepare:
 	@echo Preparation done.
 
 lex: prepare
-	$(call ensure_defined,PY_FILE_DIR)
+	$(call ensure_defined,PYS_FILE_DIR)
 	$(call ensure_defined,LEX_FILE_DIR)
 	@echo Lexing all .py files in $(PYS_FILE_DIR) and outputting lexes to $(LEX_FILE_DIR)...
 	$(PYTHON) $(driver) lex -I $(PYS_FILE_DIR) -O $(LEX_FILE_DIR)
