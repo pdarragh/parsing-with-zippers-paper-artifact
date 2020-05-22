@@ -86,7 +86,7 @@ def generate(args):
 def parse(args):
     timeout = args.timeout if args.timeout != -1 else None
     parsers = process_parser_choices(args.parsers)
-    run_parsers(args.driver, THIS_DIR, args.lex_file_dir.resolve(), args.ast_file_dir.resolve(),
+    run_parsers(args.driver, THIS_DIR, args.input_dir.resolve(), args.output_dir.resolve(),
                 strs_of_parsers(parsers), timeout)
 
 
@@ -97,13 +97,13 @@ def verify(args):
 
 def benchmark(args):
     parsers = process_parser_choices(args.parsers)
-    run_benchmarks(args.driver, THIS_DIR, args.lex_file_dir.resolve(), args.bench_file_dir.resolve(),
+    run_benchmarks(args.driver, THIS_DIR, args.input_dir.resolve(), args.output_dir.resolve(),
                    strs_of_parsers(parsers), args.resume, args.quota_factor, args.max_quota)
 
 
 def post_process(args):
     parsers = process_parser_choices(args.parsers)
-    post_process_benchmark_results(args.bench_file_dir.resolve(), strs_of_parsers(parsers), args.overwrite)
+    post_process_benchmark_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite)
 
 
 if __name__ == '__main__':
