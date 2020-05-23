@@ -43,8 +43,10 @@ date to attend to these warnings.)
 ### Time-Consuming Benchmarks
 
 Our benchmarks can take a long time to run (certainly more than 10 minutes!).
-However, they can be stopped and resumed as-needed. This procedure is explained
-in the associated `README.md` file.
+However, they can be stopped and resumed as-needed. Alternatively, a low timeout
+or quota multiplier can be set, or you can remove some of the input files to
+reduce the total time taken. These procedures are explained in the associated
+`README.md` file.
 
 ### Discrepancy in Benchmark Inputs
 
