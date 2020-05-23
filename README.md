@@ -20,6 +20,26 @@ located within each of these directories.
 
 These are notes that are relevant to the AEC.
 
+### Artifact Sub-component READMEs
+
+Both of the top-level sub-components have their own README files. These contain
+installation and configuration instructions which are not relevant to the AEC
+when using the QEmu virtual machine, because all such dependencies have already
+been installed. However, for the curious reviewer (or later paper-reader) who
+chooses to install the dependencies themselves, we leave these instructions
+intact.
+
+### OCaml Compilation Warnings
+
+The `benchmark` code produces a significant number of warnings. This is mostly
+due to the way we copied code from previous papers' work for comparative
+benchmarks. OCaml has very specific style guidelines that were not observed in
+the previous work, and this stylistic deviations cause a significant number of
+warnings to appear during compilation. We apologize for the inconvenience, but
+we feel it best not to fix the code to alleviate these constraints at this time.
+(However, we will note that we may adjust the code stored on GitHub at a later
+date to attend to these warnings.)
+
 ### Time-Consuming Benchmarks
 
 Our benchmarks can take a long time to run (certainly more than 10 minutes!).
