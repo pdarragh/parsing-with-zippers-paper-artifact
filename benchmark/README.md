@@ -75,6 +75,8 @@ $ make benchmark
 Note that this is a **long** process. Benchmarking on a dedicated cloud computer
 took nearly a full day. The `TIMEOUT` parameter can be adjusted according to the
 options detailed below if you wish to run a smaller sample benchmark.
+Additionally, the [Reducing Benchmark Time](#reducing-benchmark-time) section
+below explains alternative methods of reducing the time taken.
 
 The benchmark process is smart, however. You can cancel the running benchmarks
 (by the typical `CTRL+c` / `<C-c>`) and later resume the benchmarks (via `make
@@ -173,6 +175,37 @@ this directory. The Makefile provides a more convenient manner of organizing and
 manipulating parameters across various subcommands, but if you desire you can
 explore the script directly. It contains full `--help`-style documentation for
 each subcommand.
+
+## Reducing Benchmark Time
+
+The benchmarks can take a long time, due to various reasons.
+
+Perhaps the most effective (but also "hacky") way to reduce the benchmarking
+time is to reduce the total number of inputs. After running `make all`, you can
+delete `.lex` files from the `$LEX_FILE_DIR` (`./lexes/` by default). The `.lex`
+files contain one token on each line, and the files with more tokens tend to
+take the longest, so you can use the one-line bash script `for filename in
+./lexes/*.lex; do echo -e "$(wc -l $filename)\t$filename"; done | sort` to count
+the number of lines in each file and output them (with the line count) in sorted
+order. You could then go through this list in reverse order and remove as many
+files as you feel is necessary to reduce the benchmarking time.
+
+An alternative method is to set a maximum timeout by way of the `TIMEOUT`
+parameter. This can be set when using the Makefile by doing, e.g., `TIMEOUT=3
+make benchmark`, which would prevent any individual benchmark from taking more
+than 3 seconds. Benchmarks which go over the time will be marked as failures and
+discarded. By default, there is no timeout imposed in this manner (i.e., it is
+set to -1).
+
+Another option is to make use of the `QUOTA_FACTOR` or `MAX_QUOTA` parameters in
+the Makefile. Initially, all benchmarks are capped with a quota of 1 second. Any
+benchmark which takes longer than this is pushed onto a queue, which will then
+be consumed in-order after the remaining benchmarks are attempted. Each time an
+item is pushed onto the queue, its quota is multiplied by the `QUOTA_FACTOR`. A
+large `QUOTA_FACTOR` will cause slower benchmarks to take exponentially longer
+until they are given enough time to complete or they eventually hit the
+`MAX_QUOTA`, at which point they will be marked as failures. The default
+`QUOTA_FACTOR` is 3, and the default `MAX_QUOTA` is 1000.
 
 ## Parsing
 
