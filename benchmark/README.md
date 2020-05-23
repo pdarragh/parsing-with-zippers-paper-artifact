@@ -165,6 +165,15 @@ grammar specification as-given is heavily left-recursive, which is problematic
 for some parsers in this suite (such as Menhir, which is LR(1)). We manually
 transformed this grammar specification to be non-left-recursive.
 
+### Manual Interaction
+
+The Makefile in this directory is used as the interface to the rest of the code.
+However, it is primarily an interface for the `pwz_bench.py` script found in
+this directory. The Makefile provides a more convenient manner of organizing and
+manipulating parameters across various subcommands, but if you desire you can
+explore the script directly. It contains full `--help`-style documentation for
+each subcommand.
+
 ## Parsing
 
 Although not necessary for running benchmarks, the resulting ASTs of each parse
@@ -182,7 +191,7 @@ $ make parse
 Successful parses (i.e., parses which do not produce a shell error) are denoted
 with ✅, and errors encountered (such as those due to faulty `.lex` inputs) are
 marked with ❌. Errors for each parser `$parser` will also be logged to file in
-`$AST_FILE_DIR/$parser-parse-errors.txt.
+`$AST_FILE_DIR/$parser-parse-errors.txt`.
 
 The output of each (successful) parse is a `.ast` file containing an OCaml AST
 of the resulting parse, formatted as a single line to reduce overhead caused by
