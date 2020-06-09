@@ -13,6 +13,8 @@ This artifact is organized into two top-level directories:
     algorithm and a set of example grammars that can be used for interactive
     testing.
   * `appendix` contains a copy of the code listed in the appendix of the paper.
+  * `graphs` contains code to generate graphs of empirically measured data for
+    the paper.
 
 Instructions for compilation, setup, and use appear in the `README.md` files
 located within each of these directories.
