@@ -22,7 +22,7 @@ def gen_pwz_binary_pygram_ml(desc: GrammarDescription) -> List[str]:
     prefix = 'pwz_binary_rule_'
     lines = PWZ_BINARY_PYGRAM_ML.format(
         grammar_rules='\n    and '.join(chain(
-            (f"{prefix}{token} = {{ m = {M_BOT}; e = Tok {token_pair_of_token(token)} }}"
+            (f"{prefix}{token} = {{ m = {M_BOT}; e' = Tok {token_pair_of_token(token)} }}"
              for token in chain(desc.tokens.named,
                                 desc.tokens.nameless,
                                 map(lambda p: p[0], desc.tokens.typed))),
@@ -45,9 +45,9 @@ def generate_pygram_rule(rule: Rule, desc: GrammarDescription, prefix: str) -> s
 
 
 def build_binary_alt(elements: List[str]) -> str:
-    result = f"{{ m = {M_BOT}; e = Alt (ref (Some {elements[-2]}), ref (Some {elements[-1]})) }}"
+    result = f"{{ m = {M_BOT}; e' = Alt (ref (Some {elements[-2]}), ref (Some {elements[-1]})) }}"
     for element in reversed(elements[:-2]):
-        result = f"{{ m = {M_BOT}; e = Alt (ref (Some {element}), ref (Some {result})) }}"
+        result = f"{{ m = {M_BOT}; e' = Alt (ref (Some {element}), ref (Some {result})) }}"
     return result
 
 
@@ -65,11 +65,11 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     if production_no > 0:
         production_name += f"-{production_no}"
     if len(parts) == 0:
-        return f"{{ m = {M_BOT}; e = Eps \"{production_name}\" }}"
+        return f"{{ m = {M_BOT}; e' = Eps \"{production_name}\" }}"
     elif len(parts) == 1:
-        return f"{{ m = {M_BOT}; e = Red ((fun t -> Pyast.Ast (\"{production_name}\", [t])), {parts[0]}) }}"
+        return f"{{ m = {M_BOT}; e' = Red ((fun t -> Pyast.Ast (\"{production_name}\", [t])), {parts[0]}) }}"
     elif len(parts) == 2:
-        return f"{{ m = {M_BOT}; e = Seq (\"{production_name}\", {parts[0]}, {parts[1]}) }}"
+        return f"{{ m = {M_BOT}; e' = Seq (\"{production_name}\", {parts[0]}, {parts[1]}) }}"
     else:
         return build_binary_seq(production_name, parts)
 
@@ -77,6 +77,6 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
 def build_binary_seq(label: str, elements: List[str]) -> str:
     result = elements[-1]
     for i, element in reversed(list(enumerate(elements[:-1], start=1))):
-        result = f"{{ m = {M_BOT}; e = Seq (\"BINRED-{i}-{label}\", {element}, {result}) }}"
-    result = f"{{ m = {M_BOT}; e = Red (Pyast.flatten_binary_seqs {len(elements) - 1} \"{label}\", {result}) }}"
+        result = f"{{ m = {M_BOT}; e' = Seq (\"BINRED-{i}-{label}\", {element}, {result}) }}"
+    result = f"{{ m = {M_BOT}; e' = Red (Pyast.flatten_binary_seqs {len(elements) - 1} \"{label}\", {result}) }}"
     return result

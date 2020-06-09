@@ -29,7 +29,7 @@ def gen_pwz_nary_look_pygram_ml(desc: GrammarDescription) -> List[str]:
     no_tokens = sum(map(len, (desc.tokens.named, desc.tokens.nameless, desc.tokens.typed)))
     lines = PWZ_NARY_LOOK_PYGRAM_ML.format(
         grammar_rules='\n    and '.join(chain(
-            (f"{prefix}{token} = {{ m = {M_BOT}; e = Tok {token_pair_of_token(token)}; "
+            (f"{prefix}{token} = {{ m = {M_BOT}; e' = Tok {token_pair_of_token(token)}; "
              f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"
              for token in chain(desc.tokens.named,
                                 desc.tokens.nameless,
@@ -53,7 +53,7 @@ def generate_pygram_rule(rule: Rule, desc: GrammarDescription, prefix: str, no_t
     else:
         production_strings = map(lambda p: str_of_production(p[1], desc, prefix, rule.name, no_tokens, p[0]),
                                  enumerate(group.productions, start=1))
-        return f"{prefix}{rule.name} = {{ m = {M_BOT}; e = Alt (ref [ {'; '.join(production_strings)} ]);" \
+        return f"{prefix}{rule.name} = {{ m = {M_BOT}; e' = Alt (ref [ {'; '.join(production_strings)} ]);" \
             f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"
 
 
@@ -70,5 +70,5 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     production_name = rule_name
     if production_no > 0:
         production_name += f"-{production_no}"
-    return f"{{ m = {M_BOT}; e = Seq (\"{production_name}\", [ {'; '.join(parts)} ]);" \
+    return f"{{ m = {M_BOT}; e' = Seq (\"{production_name}\", [ {'; '.join(parts)} ]);" \
         f"lookahead = Array.make {no_tokens} false; follow = Array.make {no_tokens} false; parents = []; }}"

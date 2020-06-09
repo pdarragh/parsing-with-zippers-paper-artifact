@@ -1,3 +1,4 @@
+open Pyast
 open Pytokens
 
 (* Define abstract types. *)
@@ -14,13 +15,13 @@ type exp = { mutable m : mem; e' : exp' }
 and exp' = Tok of tok
          | Seq of sym * exp list
          | Alt of (exp list) ref
-and cxt = TopC
-        | SeqC of mem * sym * exp list * exp list
-        | AltC of mem
-and mem = { start_pos : pos;
-            mutable parents : cxt list;
-            mutable end_pos : pos;
-            mutable result : exp }
+and cxt  = TopC
+         | SeqC of mem * sym * exp list * exp list
+         | AltC of mem
+and mem  = { start_pos : pos;
+             mutable parents : cxt list;
+             mutable end_pos : pos;
+             mutable result : exp }
 
 type zipper = exp' * mem
 
@@ -28,7 +29,7 @@ type zipper = exp' * mem
 let rec e_bottom = { m = m_bottom; e' = Alt (ref []) }
     and m_bottom = { start_pos = p_bottom; parents = []; end_pos = p_bottom; result = e_bottom }
 
-let derive (p : pos) ((t, l) : tok) ((e', m) : zipper) : zipper list =
+let derive (p : pos) ((t, s) : tok) ((e', m) : zipper) : zipper list =
   let rec d_d (c : cxt) (e : exp) : zipper list =
     if p == e.m.start_pos
     then (e.m.parents <- c :: e.m.parents;
@@ -39,7 +40,7 @@ let derive (p : pos) ((t, l) : tok) ((e', m) : zipper) : zipper list =
 
   and d_d' (m : mem) (e' : exp') : zipper list =
     match e' with
-    | Tok (t', _)      -> if t = t' then [(Seq (l, []), m)] else []
+    | Tok (t', _)      -> if t = t' then [(Seq (s, []), m)] else []
     | Seq (s, [])      -> d_u (Seq (s, [])) m
     | Seq (s, e :: es) -> let m' = { start_pos = m.start_pos; parents = [AltC m];
                                      end_pos = p_bottom; result = e_bottom } in
@@ -78,20 +79,19 @@ let unwrap_top_zipper ((e', m) : zipper) : exp =
 let parse (ts : tok list) (e : exp) : exp list =
   let rec parse' (p : pos) (ts : tok list) (z : zipper) : zipper list =
     match ts with
-    | []        -> derive p t_eof z
-    | t :: ts'  -> List.concat (List.map (fun z' -> parse' (ref (!p + 1)) ts' z') (derive p t z)) in
+    | []       -> derive p t_eof z
+    | t :: ts' -> List.concat (List.map (parse' (ref (!p + 1)) ts') (derive p t z)) in
   List.map unwrap_top_zipper (parse' (ref 0) ts (init_zipper e))
 
 let list_product (l1 : 'a list) (l2 : ('a list) list) : ('a list) list =
   List.concat (List.map (fun l -> List.map (List.cons l) l2) l1)
 
-(* TODO: Pyast.ast *)
-let rec ast_list_of_exp (e : exp) : Pyast.ast list =
+let rec ast_list_of_exp (e : exp) : ast list =
   match e.e' with
   | Tok _       -> []
-  | Seq (l, es) -> List.map (fun es' -> Pyast.Ast (l, es'))
+  | Seq (s, es) -> List.map (fun es' -> Ast (s, es'))
                      (List.fold_right list_product (List.map ast_list_of_exp es) [[]])
   | Alt (es)    -> List.concat (List.map ast_list_of_exp !es)
 
-let ast_list_of_exp_list (es : exp list) : Pyast.ast list =
+let ast_list_of_exp_list (es : exp list) : ast list =
   List.concat (List.map ast_list_of_exp es)

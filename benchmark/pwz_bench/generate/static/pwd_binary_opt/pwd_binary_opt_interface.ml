@@ -10,8 +10,8 @@ module PwdBinaryOptParserInterface = struct
   let process_result (result : res) : Pyast.ast =
     match result with
     | [t] -> t
-    | _   -> let header = Printf.sprintf "Invalid number of resulting AST trees in PwD-binary-opt parse: %d." (List.length result) in
-             let asts = List.map Pyast.string_of_ast result in
-             Printf.printf "%s" (header ^ "\n" ^ (String.concat "\n\n********\n\n  " asts));
-             failwith header
+    | _ -> let header = Printf.sprintf "Invalid number of resulting AST trees in PwD-binary-opt parse: %d." (List.length result) in
+           let asts = List.map Pyast.string_of_ast result in
+           Printf.printf "%s" (header ^ "\n" ^ (String.concat "\n\n********\n\n  " asts));
+           failwith header
 end
