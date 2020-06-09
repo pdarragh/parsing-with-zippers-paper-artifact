@@ -55,33 +55,33 @@ let derive (p : pos) ((t, l) : tok) ((e, m) : zipper) : zipper list =
   in d_u e m
 
 let init_zipper (e : exp) : zipper =
-    let e' = Seq (l_bottom, []) in
-    let m_top : mem = { parents = [TopC]; result  = Hashtbl.create 0; } in
-    let c = SeqC (m_top, l_bottom, [], [e; Tok t_eof]) in
-    let m_seq : mem = { parents = [c]; result  = Hashtbl.create 0; } in
-    (e', m_seq)
+  let e' = Seq (l_bottom, []) in
+  let m_top : mem = { parents = [TopC]; result  = Hashtbl.create 0; } in
+  let c = SeqC (m_top, l_bottom, [], [e; Tok t_eof]) in
+  let m_seq : mem = { parents = [c]; result  = Hashtbl.create 0; } in
+  (e', m_seq)
 
 let unwrap_top_zipper ((e', m) : zipper) : exp =
-    match m.parents with
-    | [SeqC ({ parents = [TopC] }, l_bottom, [e; _], [])] -> e
+  match m.parents with
+  | [SeqC ({ parents = [TopC] }, l_bottom, [e; _], [])] -> e
 
 let parse (ts : tok list) (e : exp) : exp list =
-    Hashtbl.clear mems;
-    let rec parse (p : pos) (ts : tok list) (z : zipper) : zipper list =
-        match ts with
-        | []       -> derive p t_eof z
-        | t :: ts' -> List.concat (List.map (fun z' -> parse (ref (!p + 1)) ts' z') (derive p t z))
-    in
-    List.map unwrap_top_zipper (parse (ref 0) ts (init_zipper e))
+  Hashtbl.clear mems;
+  let rec parse (p : pos) (ts : tok list) (z : zipper) : zipper list =
+    match ts with
+    | []       -> derive p t_eof z
+    | t :: ts' -> List.concat (List.map (fun z' -> parse (ref (!p + 1)) ts' z') (derive p t z))
+  in
+  List.map unwrap_top_zipper (parse (ref 0) ts (init_zipper e))
 
 let list_product (l1 : 'a list) (l2 : ('a list) list) : ('a list) list =
-    List.concat (List.map (fun l -> List.map (List.cons l) l2) l1)
+  List.concat (List.map (fun l -> List.map (List.cons l) l2) l1)
 
 let rec ast_list_of_exp (e : exp) : Pyast.ast list =
-    match e with
-    | Tok _       -> []
-    | Seq (l, es) -> List.map (fun es' -> Pyast.Ast (l, es')) (List.fold_right list_product (List.map ast_list_of_exp es) [[]])
-    | Alt es      -> List.concat (List.map ast_list_of_exp !es)
+  match e with
+  | Tok _       -> []
+  | Seq (l, es) -> List.map (fun es' -> Pyast.Ast (l, es')) (List.fold_right list_product (List.map ast_list_of_exp es) [[]])
+  | Alt es      -> List.concat (List.map ast_list_of_exp !es)
 
 let ast_list_of_exp_list (es : exp list) : Pyast.ast list =
-    List.concat (List.map ast_list_of_exp es)
+  List.concat (List.map ast_list_of_exp es)
