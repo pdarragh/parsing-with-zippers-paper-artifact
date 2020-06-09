@@ -177,7 +177,7 @@ collate:
 # Run the parsers without benchmarking.
 # This produces all of the parsed AST files that the `benchmark` target
 # produces, but none of the extra output in $(BENCH_FILE_DIR).
-parse: $(AST_FILE_DIR) build-parse
+parse: $(AST_FILE_DIR) $(PARSE_OUT)
 	if [ ! -d "$(LEX_FILE_DIR)" ]; then echo "$(LEX_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(PARSE_PARSERS)))
 	$(PYTHON) $(driver) parse --lex-file-dir $(LEX_FILE_DIR) --ast-file-dir $(AST_FILE_DIR) $(parser_opts) --timeout $(TIMEOUT)
