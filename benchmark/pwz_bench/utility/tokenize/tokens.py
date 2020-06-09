@@ -191,8 +191,11 @@ class Token:
 
     def __eq__(self, other) -> bool:
         if not isinstance(other, Token):
-            if other in TokenEnum:
-                return self._token == other
+            try:
+                if other in TokenEnum:
+                    return self._token == other
+            except TypeError:
+                return NotImplemented
             return NotImplemented
         return self._token == other._token
 
