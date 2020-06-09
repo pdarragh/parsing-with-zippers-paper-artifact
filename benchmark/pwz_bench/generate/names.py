@@ -11,7 +11,6 @@ class ParserEnum(Enum):
     PWZ_NARY = 'pwz_nary'
     PWZ_NARY_LIST = 'pwz_nary_list'
     PWZ_NARY_LOOK = 'pwz_nary_look'
-    PWZ_NARY_MEM = 'pwz_nary_mem'
     PWZ_BINARY = 'pwz_binary'
     PWD_BINARY = 'pwd_binary'
     PWD_BINARY_OPT = 'pwd_binary_opt'

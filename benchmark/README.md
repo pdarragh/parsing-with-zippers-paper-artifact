@@ -144,7 +144,6 @@ The list of supported parsers (for use with the `xxx_PARSERS` parameters) is:
   * `dypgen`
   * `pwz_nary`
   * `pwz_nary_look`
-  * `pwz_nary_mem`
   * `pwz_binary`
   * `pwd_binary`
   * `pwd_binary_opt`

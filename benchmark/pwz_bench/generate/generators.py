@@ -53,11 +53,6 @@ PARSER_GENERATORS: Dict[ParserEnum, List[FileGenerator]] = {
         DynamicFileGenerator(gen_pwz_nary_look_pygram_ml, 'pwz_nary_look_pygram.ml'),
         StaticFileGenerator('pwz_nary_look_interface.ml'),
     ],
-    ParserEnum.PWZ_NARY_MEM: [
-        StaticFileGenerator('pwz_nary_mem.ml'),
-        DynamicFileGenerator(gen_pwz_nary_mem_pygram_ml, 'pwz_nary_mem_pygram.ml'),
-        StaticFileGenerator('pwz_nary_mem_interface.ml'),
-    ],
     ParserEnum.PWZ_BINARY: [
         StaticFileGenerator('pwz_binary.ml'),
         DynamicFileGenerator(gen_pwz_binary_pygram_ml, 'pwz_binary_pygram.ml'),

@@ -33,7 +33,7 @@ dyp_mli := $(dyp_base).mli
 
 packages := core core_bench str menhirLib dyp
 package_opts := $(patsubst %,-package %, $(packages))
-includes := menhir dypgen pwz_nary pwz_nary_list pwz_nary_look pwz_nary_mem pwz_binary pwd_binary pwd_binary_opt pwd_nary pwd_nary_opt
+includes := menhir dypgen pwz_nary pwz_nary_list pwz_nary_look pwz_binary pwd_binary pwd_binary_opt pwd_nary pwd_nary_opt
 include_opts := $(patsubst %,-I ./%, $(includes)) -I $(dyp_lib)
 ocamlfind_opts := $(package_opts) $(include_opts) -linkpkg -thread
 ocamlfind_cmd := $(ocamlfind) $(ocamlfind_opts)
@@ -44,14 +44,13 @@ dypgen_sources := $(dyp_mli) $(dyp_out) dypgen/dypgen_interface.ml
 pwz_nary_sources := pwz_nary/pwz_nary.ml pwz_nary/pwz_nary_pygram.ml pwz_nary/pwz_nary_interface.ml
 pwz_nary_list_sources := pwz_nary_list/pwz_nary_list.ml pwz_nary_list/pwz_nary_list_pygram.ml pwz_nary_list/pwz_nary_list_interface.ml
 pwz_nary_look_sources := pwz_nary_look/pwz_nary_look.ml pwz_nary_look/pwz_nary_look_pygram.ml pwz_nary_look/pwz_nary_look_interface.ml
-pwz_nary_mem_sources := pwz_nary_mem/pwz_nary_mem.ml pwz_nary_mem/pwz_nary_mem_pygram.ml pwz_nary_mem/pwz_nary_mem_interface.ml
 pwz_binary_sources := pwz_binary/pwz_binary.ml pwz_binary/pwz_binary_pygram.ml pwz_binary/pwz_binary_interface.ml
 pwd_binary_sources := pwd_binary/pwd_binary.ml pwd_binary/pwd_binary_pygram.ml pwd_binary/pwd_binary_interface.ml
 pwd_binary_opt_sources := pwd_binary_opt/pwd_binary_opt.ml pwd_binary_opt/pwd_binary_opt_pygram.ml pwd_binary_opt/pwd_binary_opt_interface.ml
 pwd_nary_sources := pwd_nary/pwd_nary.ml pwd_nary/pwd_nary_pygram.ml pwd_nary/pwd_nary_interface.ml
 pwd_nary_opt_sources := pwd_nary_opt/pwd_nary_opt.ml pwd_nary_opt/pwd_nary_opt_pygram.ml pwd_nary_opt/pwd_nary_opt_interface.ml
 common_cli_sources := pwz_cli_common.ml
-base_sources := $(common_sources) $(menhir_sources) $(dypgen_sources) $(pwz_nary_sources) $(pwz_nary_list_sources) $(pwz_nary_look_sources) $(pwz_nary_mem_sources) $(pwz_binary_sources) $(pwd_binary_sources) $(pwd_binary_opt_sources) $(pwd_nary_sources) $(pwd_nary_opt_sources) $(common_cli_sources)
+base_sources := $(common_sources) $(menhir_sources) $(dypgen_sources) $(pwz_nary_sources) $(pwz_nary_list_sources) $(pwz_nary_look_sources) $(pwz_binary_sources) $(pwd_binary_sources) $(pwd_binary_opt_sources) $(pwd_nary_sources) $(pwd_nary_opt_sources) $(common_cli_sources)
 bench_sources := $(base_sources) pwz_bench.ml
 parse_sources := $(base_sources) pwz_parse.ml
 

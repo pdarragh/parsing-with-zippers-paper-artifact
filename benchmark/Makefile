@@ -22,7 +22,7 @@ MKDIR_P := mkdir -p
 
 PYTHON ?= python3
 
-VERIFY_PARSERS ?= dypgen pwz_nary pwz_nary_look pwz_nary_mem pwz_binary pwd_binary pwd_binary_opt pwd_nary pwd_nary_opt
+VERIFY_PARSERS ?= dypgen pwz_nary pwz_nary_look pwz_binary pwd_binary pwd_binary_opt pwd_nary pwd_nary_opt
 PARSE_PARSERS ?= menhir $(VERIFY_PARSERS)
 BENCH_PARSERS ?= $(PARSE_PARSERS)
 

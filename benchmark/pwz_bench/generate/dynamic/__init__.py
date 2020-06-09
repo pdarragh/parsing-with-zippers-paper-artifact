@@ -8,5 +8,4 @@ from .pwd_nary_opt import *
 from .pwz_nary import *
 from .pwz_nary_list import *
 from .pwz_nary_look import *
-from .pwz_nary_mem import *
 from .pwz_binary import *

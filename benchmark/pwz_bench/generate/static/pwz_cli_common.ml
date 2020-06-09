@@ -9,7 +9,6 @@ open Dypgen_interface
 open Pwz_nary_interface
 open Pwz_nary_list_interface
 open Pwz_nary_look_interface
-open Pwz_nary_mem_interface
 open Pwz_binary_interface
 open Pwd_binary_interface
 open Pwd_binary_opt_interface
@@ -25,7 +24,6 @@ let parsers_to_interfaces : parser_desc list =
     ; ("pwz_nary", (module PwzNaryParserInterface))
     ; ("pwz_nary_list", (module PwzNaryListParserInterface))
     ; ("pwz_nary_look", (module PwzNaryLookParserInterface))
-    ; ("pwz_nary_mem", (module PwzNaryMemParserInterface))
     ; ("pwz_binary", (module PwzBinaryParserInterface))
     ; ("pwd_binary", (module PwdBinaryParserInterface))
     ; ("pwd_binary_opt", (module PwdBinaryOptParserInterface))
