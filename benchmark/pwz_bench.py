@@ -15,9 +15,9 @@ ALL = 'all'
 THIS_FILE = Path(__file__).resolve()
 THIS_DIR = THIS_FILE.parent
 DEFAULT_TGZ_FILE = THIS_DIR / 'Python-3.4.3.tgz'
-DEFAULT_OUT_DIR = THIS_DIR / 'out'
-DEFAULT_BENCH = DEFAULT_OUT_DIR / 'pwz_bench'
-DEFAULT_PARSE = DEFAULT_OUT_DIR / 'pwz_parse'
+DEFAULT_GEN_DIR = THIS_DIR / 'gen'
+DEFAULT_BENCH = DEFAULT_GEN_DIR / 'pwz_bench'
+DEFAULT_PARSE = DEFAULT_GEN_DIR / 'pwz_parse'
 DEFAULT_PY_DIR = THIS_DIR / 'pys'
 DEFAULT_LEX_DIR = THIS_DIR / 'lexes'
 DEFAULT_AST_DIR = THIS_DIR / 'parses'
@@ -142,7 +142,7 @@ if __name__ == '__main__':
                                  help="the grammar file to build a parser generator from")
     generate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                  help="the parser to generate; can be given more than once or left out to generate all")
-    generate_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_OUT_DIR,
+    generate_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_GEN_DIR,
                                  help="the directory to write all generated files to")
     generate_parser.add_argument('-s', '--start-symbol', action='append', dest='start_symbols',
                                  help="specify a non-terminal as a start symbol; can be given more than once")

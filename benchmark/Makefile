@@ -29,7 +29,7 @@ BENCH_PARSERS ?= $(PARSE_PARSERS)
 TGZ_FILE ?= $(strip $(abspath $(mkfile_abs_dir)/Python-3.4.3.tgz))
 GRAMMAR_FILE ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
 START_SYMBOLS ?= single_input file_input eval_input
-OUT_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
+GEN_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/gen))
 PY_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
@@ -41,8 +41,8 @@ MAX_QUOTA ?= 1000
 
 start_symbol_opts := $(patsubst %,-s %, $(START_SYMBOLS))
 
-BENCH_OUT ?= $(OUT_DIR)/pwz_bench
-PARSE_OUT ?= $(OUT_DIR)/pwz_parse
+BENCH_OUT ?= $(GEN_DIR)/pwz_bench
+PARSE_OUT ?= $(GEN_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
@@ -54,12 +54,12 @@ clean-all: clean-generate clean-py clean-lex clean-parse clean-bench
 
 clean-light:
 	@echo Lightly cleaning...
-	-$(MAKE) -C $(OUT_DIR) clean
+	-$(MAKE) -C $(GEN_DIR) clean
 	@echo Clean complete.
 
 clean-generate:
-	@echo Removing $(OUT_DIR)...
-	-$(RM) -r $(OUT_DIR)
+	@echo Removing $(GEN_DIR)...
+	-$(RM) -r $(GEN_DIR)
 	@echo Removal complete.
 
 clean-py:
@@ -82,19 +82,19 @@ clean-bench:
 	-$(RM) -r $(BENCH_FILE_DIR)
 	@echo Removal complete.
 
-$(OUT_DIR)/Makefile:
-	@echo Generating output files in $(OUT_DIR)...
-	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) --output-dir $(OUT_DIR) -p all
-	$(MAKE) -C $(OUT_DIR) generate
+$(GEN_DIR)/Makefile:
+	@echo Generating output files in $(GEN_DIR)...
+	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) --output-dir $(GEN_DIR) -p all
+	$(MAKE) -C $(GEN_DIR) generate
 	@echo File generation complete.
 
-generate: $(OUT_DIR)/Makefile
+generate: $(GEN_DIR)/Makefile
 
 $(BENCH_OUT): generate
-	$(MAKE) -C $(OUT_DIR) bench
+	$(MAKE) -C $(GEN_DIR) bench
 
 $(PARSE_OUT): generate
-	$(MAKE) -C $(OUT_DIR) parse
+	$(MAKE) -C $(GEN_DIR) parse
 
 build-bench: $(BENCH_OUT)
 
@@ -103,7 +103,7 @@ build-parse: $(PARSE_OUT)
 build: build-bench build-parse
 
 profile: generate
-	$(MAKE) -C $(OUT_DIR) profile
+	$(MAKE) -C $(GEN_DIR) profile
 
 $(PY_FILE_DIR):
 	$(MKDIR_P) $@
