@@ -150,7 +150,10 @@ class TokenEnum(Enum):
         self.cls = cls
 
     def __eq__(self, other) -> bool:
-        if other not in TokenEnum:
+        try:
+            if other not in TokenEnum:
+                return NotImplemented
+        except TypeError:
             return NotImplemented
         return self.tag == other.tag
 
