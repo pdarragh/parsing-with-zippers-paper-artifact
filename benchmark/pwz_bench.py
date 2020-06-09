@@ -103,7 +103,7 @@ def benchmark(args):
 
 
 def collate(args):
-    parsers = process_parser_choices(args.parser)
+    parsers = process_parser_choices(args.parsers)
     collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite, args.output_file.resolve())
 
 
