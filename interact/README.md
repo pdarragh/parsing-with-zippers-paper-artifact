@@ -36,8 +36,8 @@ are used as dummy values during expression construction, among other things.
 
 `pwz.ml` is the implementation of the algorithm described in the paper.
 
-`cst.ml` defines an additional type (`cst`) and functions for extracting
-concrete syntax trees from completed parses resulting from calls to `Pwz.parse`.
+`ast.ml` defines an additional type (`ast`) and functions for extracting
+abstract syntax trees from completed parses resulting from calls to `Pwz.parse`.
 It is used for convenience, and so is not considered part of the algorithm
 proper.
 
