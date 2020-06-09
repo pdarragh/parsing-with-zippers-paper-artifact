@@ -539,3 +539,11 @@ let print_test_results () : unit =
   in match grammar_test_results () with
   | [] -> Printf.printf "All tests passed successfully."
   | _  -> List.iter print_result (grammar_test_results ())
+
+let count_recursions_in_grammar13 () : (int * int) list =
+  let rec iota (start : int) (step : int) (stop : int) : int list =
+    if start > stop
+    then []
+    else start :: iota (start + step) step stop in
+  let f (i : int) = (i, snd (instrumented_parse (module Grammar13) (String.make i 'A'))) in
+  List.map f (iota 0 10 500)
