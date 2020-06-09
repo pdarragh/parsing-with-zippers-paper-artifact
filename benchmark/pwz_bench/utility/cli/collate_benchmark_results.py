@@ -8,18 +8,23 @@ from typing import Dict, List, Optional
 __all__ = ['collate_benchmarking_results']
 
 
+# Default name of the output file.
+DEFAULT_OUT_FILENAME = 'all-bench-results.csv'
+# These constants are for titling the columns in the output CSV.
 FILENAME = 'Filename'
 TOKENS = 'Tokens'
 SPT = 'Sec/Tok'
 TPR = 'Time/Run'
-
+# Regular expressions.
 EXTRACT_TPR_RE = re_compile(r'([\d_]+(?:\.\d+)?)\D+')
 TPR_BIGDIG_RE = re_compile(r'(\d+)\.0+')
 TPR_SIGFIG_RE = re_compile(r'(\d+\.0*[1-9]\d{2})\d*')
 
 
-def collate_benchmarking_results(bench_file_dir: Path, parsers: List[str], overwrite: bool = False):
-    out_file = bench_file_dir / 'all-bench-results.csv'
+def collate_benchmarking_results(bench_file_dir: Path, parsers: List[str], overwrite: bool = False,
+                                 out_file: Optional[Path] = None):
+    if out_file is None:
+        out_file = bench_file_dir / DEFAULT_OUT_FILENAME
     print(f"Collating benchmarking results and outputting results in {out_file}...")
     if out_file.is_file():
         if not overwrite:
