@@ -1,5 +1,5 @@
 #mod_use "types.ml";;
-#mod_use "cst.ml";;
+#mod_use "ast.ml";;
 #mod_use "pwz.ml";;
 #mod_use "grammars.ml";;
 
@@ -30,9 +30,9 @@ Parsing with Zippers REPL
 
   The `parse` function returns an empty list if the parse fails. Otherwise, it
   will return a list with at least one `exp` in it. The `exp` objects can be
-  difficult to read at a glance, so we have also provided the `parse_to_cst`
-  function that will eagerly extract a concrete syntax tree from the parse
-  result. Note that the `parse_to_cst` function is exponential, and it will
+  difficult to read at a glance, so we have also provided the `parse_to_ast`
+  function that will eagerly extract a abstract syntax tree from the parse
+  result. Note that the `parse_to_ast` function is exponential, and it will
   cause a stack overflow on expressions that produce infinite parse forests.
 
   The grammars include a few test cases. To run all the tests, simply do:

@@ -4,7 +4,7 @@ ocamlfind := ocamlfind $(OCAMLOPT) -I .
 compilation_extensions := o,cma,cmo,cmi,cmx,cmxa,cmxo,cmxi
 interface_extensions := mli,
 
-sources := types.ml cst.ml pwz.ml grammars.ml
+sources := types.ml ast.ml pwz.ml grammars.ml
 
 .PHONY: clean
 .PHONY: clean-all
