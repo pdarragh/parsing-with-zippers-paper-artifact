@@ -11,11 +11,7 @@ type tok = token_pair
 let t_eof = (-1, "<t_eof>")
 
 (* Define types. *)
-type exp = { mutable m : mem;
-             e' : exp';
-             lookahead : bool array;
-             follow : bool array;
-             mutable parents : exp list }
+type exp = { mutable m : mem; e' : exp'; lookahead : bool array; follow : bool array; mutable parents : exp list }
 and exp' = Tok of tok
          | Seq of sym * exp list
          | Alt of (exp list) ref
@@ -30,17 +26,8 @@ and mem  = { start_pos : pos;
 type zipper = exp' * mem
 
 (* Define bottom values. *)
-let rec e_bottom = {
-    m         = m_bottom;
-    e'        = Alt (ref []);
-    lookahead = [| |];
-    follow    = [| |];
-    parents   = [] }
-and m_bottom = {
-    start_pos = p_bottom;
-    parents   = [];
-    end_pos   = p_bottom;
-    result    = e_bottom }
+let rec e_bottom = { m = m_bottom; e' = Alt (ref []); lookahead = [| |]; follow = [| |]; parents = [] }
+    and m_bottom = { start_pos = p_bottom; parents = []; end_pos = p_bottom; result = e_bottom }
 
 let worklist : (zipper list) ref = ref []
 
