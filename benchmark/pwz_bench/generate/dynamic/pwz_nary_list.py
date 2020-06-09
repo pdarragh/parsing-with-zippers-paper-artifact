@@ -22,7 +22,7 @@ def gen_pwz_nary_list_pygram_ml(desc: GrammarDescription) -> List[str]:
     prefix = 'pwz_nary_list_rule_'
     lines = PWZ_NARY_LIST_PYGRAM_ML.format(
         grammar_rules='\n    and '.join(chain(
-            (f"{prefix}{token} = {{ m = {M_BOT}; e = Tok {token_pair_of_token(token)} }}"
+            (f"{prefix}{token} = {{ m = {M_BOT}; e' = Tok {token_pair_of_token(token)} }}"
              for token in chain(desc.tokens.named,
                                 desc.tokens.nameless,
                                 map(lambda p: p[0], desc.tokens.typed))),
@@ -41,7 +41,7 @@ def generate_pygram_rule(rule: Rule, desc: GrammarDescription, prefix: str) -> s
     else:
         production_strings = map(lambda p: str_of_production(p[1], desc, prefix, rule.name, p[0]),
                                  enumerate(group.productions, start=1))
-        return f"{prefix}{rule.name} = {{ m = {M_BOT}; e = Alt (ref [ {'; '.join(production_strings)} ]) }}"
+        return f"{prefix}{rule.name} = {{ m = {M_BOT}; e' = Alt (ref [ {'; '.join(production_strings)} ]) }}"
 
 
 def str_of_production(production: Production, desc: GrammarDescription, prefix: str, rule_name: str,
@@ -57,4 +57,4 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     production_name = rule_name
     if production_no > 0:
         production_name += f"-{production_no}"
-    return f"{{ m = {M_BOT}; e = Seq (\"{production_name}\", [ {'; '.join(parts)} ]) }}"
+    return f"{{ m = {M_BOT}; e' = Seq (\"{production_name}\", [ {'; '.join(parts)} ]) }}"

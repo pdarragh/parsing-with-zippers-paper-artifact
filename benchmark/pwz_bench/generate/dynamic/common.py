@@ -49,8 +49,8 @@ open Core
 type ast = Pyast.ast
 
 type tag = int
-type lab = string
-type token_pair = (tag * lab)
+type sym = string
+type token_pair = (tag * sym)
 
 type token =
     | {token_type_def}

@@ -67,7 +67,7 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     if len(parts) == 0:
         return f"{{ m = {M_BOT}; e = Eps \"{production_name}\" }}"
     elif len(parts) == 1:
-        return f"{{ m = {M_BOT}; e = Red ((fun t -> Pyast.Seq (\"{production_name}\", [t])), {parts[0]}) }}"
+        return f"{{ m = {M_BOT}; e = Red ((fun t -> Pyast.Ast (\"{production_name}\", [t])), {parts[0]}) }}"
     elif len(parts) == 2:
         return f"{{ m = {M_BOT}; e = Seq (\"{production_name}\", {parts[0]}, {parts[1]}) }}"
     else:

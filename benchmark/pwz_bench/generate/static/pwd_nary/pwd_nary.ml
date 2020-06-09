@@ -6,7 +6,7 @@ type grammar' =
     | Nil
     | Eps of (Pyast.ast list) Lazy.t
     | Tok of tok
-    | Seq of lab * (grammar list)
+    | Seq of sym * (grammar list)
     | Alt of grammar list
     | Red of (Pyast.ast -> Pyast.ast) * grammar
 and grammar = grammar' Lazy.t
@@ -187,23 +187,23 @@ let rec parse_null (g : grammar) : Pyast.ast list =
         | Nil           -> []
         | Eps ts        -> Lazy.force ts
         | Tok _         -> []
-        | Seq (l, gs)   -> List.map (fun gs' -> Pyast.Seq (l, gs')) (List.fold_right list_product (List.map parse_null gs) [[]])
+        | Seq (l, gs)   -> List.map (fun gs' -> Pyast.Ast (l, gs')) (List.fold_right list_product (List.map parse_null gs) [[]])
         | Alt gs        -> List.concat (List.map parse_null gs)
         | Red (f, g)    -> List.map f (parse_null g)
     in
     fix parse_null_cache parse_null_params parse_null' [] g
 
-let mk_eps_star (l : lab) (gs : grammar list) : grammar =
-    lazy (Eps (lazy (List.map (fun ts -> Pyast.Seq ("EPS-*-" ^ l, ts)) (cartesian_product (List.map parse_null gs)))))
+let mk_eps_star (l : sym) (gs : grammar list) : grammar =
+    lazy (Eps (lazy (List.map (fun ts -> Pyast.Ast ("EPS-*-" ^ l, ts)) (cartesian_product (List.map parse_null gs)))))
 
-let mk_seq_star (l : lab) (prev_gs : grammar list) (next_gs : grammar list) : grammar =
-    let f = fun (Pyast.Seq (l', Pyast.Seq (l'', prev_gs') :: next_gs')) -> Pyast.Seq (l', prev_gs' @ next_gs') in
+let mk_seq_star (l : sym) (prev_gs : grammar list) (next_gs : grammar list) : grammar =
+    let f = fun (Pyast.Ast (l', Pyast.Ast (l'', prev_gs') :: next_gs')) -> Pyast.Ast (l', prev_gs' @ next_gs') in
     lazy (Red (f, (lazy (Seq (l, mk_eps_star l prev_gs :: next_gs)))))
 
 let derive_cache = GrammarHash.create 1
 let clear_derive_cache () = GrammarHash.clear derive_cache
 let rec derive (g : grammar) (tok : tok) : grammar =
-    let derive_seq (l : lab) (gs : grammar list) =
+    let derive_seq (l : sym) (gs : grammar list) =
         let rec derive_seq' (prev_gs : grammar list) (next_gs : grammar list) (accum_gs : grammar list) : grammar list =
             match next_gs with
             | []            -> accum_gs
@@ -217,7 +217,7 @@ let rec derive (g : grammar) (tok : tok) : grammar =
             match Lazy.force g with
             | Nil           -> Nil
             | Eps _         -> Nil
-            | Tok (t', _)   -> if t == t' then Eps (lazy [Pyast.Seq (l, [])]) else Nil
+            | Tok (t', _)   -> if t == t' then Eps (lazy [Pyast.Ast (l, [])]) else Nil
             | Seq (l', [])  -> Nil
             | Seq (l', gs)  -> Alt (derive_seq l' gs)
             | Alt gs        -> Alt (List.map (fun g -> derive g tok) gs)
@@ -247,9 +247,9 @@ let rec make_compact (g : grammar) : grammar =
             | _ when (is_empty g)               -> Nil
             | _ when (nullp g)                  -> let t = !nullp_t in Eps (lazy [t])
             (* Sequence compaction. *)
-            | Seq (l, [g])                      -> Red ((fun t -> Pyast.Seq (l, [t])), make_compact g)
-            | Seq (l, [g1; g2]) when (nullp g1) -> let t1 = !nullp_t in Red ((fun t -> Pyast.Seq (l, [t1; t])), make_compact g2)
-            | Seq (l, g :: gs) when (nullp g)   -> let t1 = !nullp_t in Red ((fun t -> match t with Pyast.Seq (l', ts) -> Pyast.Seq (l', t1 :: ts)), lazy (Seq (l, List.map make_compact gs)))
+            | Seq (l, [g])                      -> Red ((fun t -> Pyast.Ast (l, [t])), make_compact g)
+            | Seq (l, [g1; g2]) when (nullp g1) -> let t1 = !nullp_t in Red ((fun t -> Pyast.Ast (l, [t1; t])), make_compact g2)
+            | Seq (l, g :: gs) when (nullp g)   -> let t1 = !nullp_t in Red ((fun t -> match t with Pyast.Ast (l', ts) -> Pyast.Ast (l', t1 :: ts)), lazy (Seq (l, List.map make_compact gs)))
             | Seq (l, gs)                       -> Seq (l, List.map make_compact gs)
             (* Alternate compaction. *)
             | Alt gs                            -> Alt (List.map make_compact (List.filter (fun g -> not (is_empty g)) gs))

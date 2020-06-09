@@ -81,12 +81,12 @@ let make_opt_seq_node left right = match left.tag with
   | Empty_tag -> make_empty_node ()
   | Seq_tag -> make_red_node (make_seq_node left.child1 (make_seq_node left.child2 right))
      (fun ts -> List.map (fun t -> match t with
-       Seq (l1, [t1; Seq (l2, [t2; t3])]) -> Seq (l2, [Seq (l1, [t1; t2]); t3])) ts)
+       Pyast.Ast (l1, [t1; Pyast.Ast (l2, [t2; t3])]) -> Pyast.Ast (l2, [Pyast.Ast (l1, [t1; t2]); t3])) ts)
   | Eps_tag t -> make_red_node right (fun ts2 -> List.concat (List.map (fun t1 ->
-    List.map (fun t2 -> Seq ("<seq>", [t1; t2])) ts2) (Lazy.force t)))
+    List.map (fun t2 -> Pyast.Ast ("<seq>", [t1; t2])) ts2) (Lazy.force t)))
   | Red_tag f -> make_red_node (make_seq_node left.child1 right)
      (fun ts -> List.concat (List.map (function
-     | Seq (l, [t1; t2]) -> List.map (fun t' -> Seq (l, [t'; t2])) (f [t1])) ts))
+     | Pyast.Ast (l, [t1; t2]) -> List.map (fun t' -> Pyast.Ast (l, [t'; t2])) (f [t1])) ts))
   | _ -> make_seq_node left right
 
 let make_opt_red_node child func =
@@ -119,15 +119,15 @@ let seq_node_set_opt_left node left right =
   | Empty_tag -> empty_node_set node; true
   | Seq_tag -> red_node_set node (make_opt_seq_node left.child1 (make_opt_seq_node left.child2 right))
      (fun ts -> List.map (function
-     | Seq (l1, [t1; Seq (l2, [t2; t3])]) -> Seq (l2, [Seq (l1, [t1; t2]); t3])) ts);
+     | Pyast.Ast (l1, [t1; Pyast.Ast (l2, [t2; t3])]) -> Pyast.Ast (l2, [Pyast.Ast (l1, [t1; t2]); t3])) ts);
     true
   | Eps_tag t -> red_node_set node right
      (fun ts2 -> List.concat (List.map (fun t1 ->
-       List.map (fun t2 -> Seq ("<seq>", [t1; t2])) ts2) (Lazy.force t)));
+       List.map (fun t2 -> Pyast.Ast ("<seq>", [t1; t2])) ts2) (Lazy.force t)));
     true
   | Red_tag f -> red_node_set node (make_opt_seq_node left.child1 right)
      (fun ts -> List.concat (List.map (function
-     | Seq (l, [t1; t2]) -> List.map (fun t' -> Seq (l, [t'; t2])) (f [t1])) ts));
+     | Pyast.Ast (l, [t1; t2]) -> List.map (fun t' -> Pyast.Ast (l, [t'; t2])) (f [t1])) ts));
     true
   | _ -> seq_node_set node left right; false
 
@@ -184,12 +184,12 @@ let rec optimize l =
             | Eps_tag t ->
                red_node_set l l.child1
                   (fun ts1 -> List.concat (List.map (fun t1 -> List.map (fun t2 ->
-                    Seq ("<seq>", [t1; t2])) (Lazy.force t)) ts1));
+                    Pyast.Ast ("<seq>", [t1; t2])) (Lazy.force t)) ts1));
               true
             | Red_tag f ->
                red_node_set l (make_seq_node l.child1 l.child2.child1)
                  (fun ts -> List.concat (List.map (function
-                 | Seq (l, [t1; t2]) -> List.map (fun t' -> Seq (l, [t1; t'])) [t2]) ts));
+                 | Pyast.Ast (l, [t1; t2]) -> List.map (fun t' -> Pyast.Ast (l, [t1; t'])) [t2]) ts));
               true
             | _ -> false))
       | _ -> false in
@@ -210,7 +210,7 @@ let rec parse_tree l =
           | Eps_tag t -> Lazy.force t
           | Red_tag f -> f (parse_tree l.child1)
           | Alt_tag -> List.append (parse_tree l.child1) (parse_tree l.child2)
-          | Seq_tag -> List.concat (List.map (fun t1 -> List.map (fun t2 -> Seq ("<seq>", [t1; t2])) (parse_tree l.child2)) (parse_tree l.child1)) in
+          | Seq_tag -> List.concat (List.map (fun t1 -> List.map (fun t2 -> Pyast.Ast ("<seq>", [t1; t2])) (parse_tree l.child2)) (parse_tree l.child1)) in
         l.ast <- result;
         result)
 
@@ -230,7 +230,7 @@ let rec derive l c =
   | Eps_tag t -> my_let_result (make_empty_node ()) (fun _ -> ())
   | Token_tag (pred, clas) -> my_let_result
      (if pred c
-      then make_eps_node (lazy [Seq (snd c, [])])
+      then make_eps_node (lazy [Pyast.Ast (snd c, [])])
       else make_empty_node ())
      (fun _ -> ())
   | Red_tag f -> my_let_result
@@ -248,7 +248,7 @@ let rec derive l c =
               (let child = l.child1 in
                fun ts2 ->
                  List.concat (List.map (fun t1 ->
-                   List.map (fun t2 -> Seq ("<seq>", [t1; t2])) ts2) (parse_tree child))))
+                   List.map (fun t2 -> Pyast.Ast ("<seq>", [t1; t2])) ts2) (parse_tree child))))
            (make_opt_seq_node (derive l.child1 c) l.child2)
          else seq_node_set_opt_left result (derive l.child1 c) l.child2)
 

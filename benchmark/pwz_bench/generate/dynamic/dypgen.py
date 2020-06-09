@@ -10,7 +10,7 @@ __all__ = ['gen_pydyp_dyp']
 PYDYP_DYP_PRELUDE = """\
 /* Prelude */
 {
-let seq (p : (string * Pyast.ast list)) : Pyast.ast = Pyast.Seq (fst p, snd p)
+let seq (p : (string * Pyast.ast list)) : Pyast.ast = Pyast.Ast (fst p, snd p)
 let tok (s : string) : Pyast.ast = seq (s, [])
 }
 """

@@ -3,18 +3,14 @@ open Pytokens
 (* Define types. *)
 type tok = token_pair
 type pos = int ref
-type exp =
-    | Tok of tok
-    | Seq of lab * (exp list)
-    | Alt of (exp list) ref
-and cxt =
-    | TopC
-    | SeqC of mem * lab * (exp list) * (exp list)
-    | AltC of mem
-and mem = {
-    mutable parents : cxt list;
-    result          : (pos, exp) Hashtbl.t
-}
+type exp = Tok of tok
+         | Seq of sym * (exp list)
+         | Alt of (exp list) ref
+type cxt = TopC
+         | SeqC of mem * sym * (exp list) * (exp list)
+         | AltC of mem
+and mem  = { mutable parents : cxt list; result : (pos, exp) Hashtbl.t }
+
 type zipper = exp * mem
 
 (* Define bottom values. *)
@@ -23,13 +19,12 @@ let t_eof = (-1, l_bottom)
 
 (* Define global hashmap. *)
 let mems : ((pos * exp), mem) Hashtbl.t = Hashtbl.create 0
-let clear_mems () = Hashtbl.clear mems
 
 let derive (p : pos) ((t, l) : tok) ((e, m) : zipper) : zipper list =
   let rec d_d (c : cxt) (e : exp) : zipper list =
-    match (Hashtbl.find_opt mems (p, e)) with
+    match Hashtbl.find_opt mems (p, e) with
     | Some m -> m.parents <- c :: m.parents;
-                (match (Hashtbl.find_opt m.result p) with
+                (match Hashtbl.find_opt m.result p with
                  | Some e -> d_u' e c
                  | None   -> [])
     | None   -> let m = { parents = [c]; result = Hashtbl.create 0 } in
@@ -61,24 +56,17 @@ let derive (p : pos) ((t, l) : tok) ((e, m) : zipper) : zipper list =
 
 let init_zipper (e : exp) : zipper =
     let e' = Seq (l_bottom, []) in
-    let m_top : mem = {
-        parents = [TopC];
-        result  = Hashtbl.create 0;
-    } in
+    let m_top : mem = { parents = [TopC]; result  = Hashtbl.create 0; } in
     let c = SeqC (m_top, l_bottom, [], [e; Tok t_eof]) in
-    let m_seq : mem = {
-        parents = [c];
-        result  = Hashtbl.create 0;
-    } in
+    let m_seq : mem = { parents = [c]; result  = Hashtbl.create 0; } in
     (e', m_seq)
 
 let unwrap_top_zipper ((e', m) : zipper) : exp =
     match m.parents with
     | [SeqC ({ parents = [TopC] }, l_bottom, [e; _], [])] -> e
-    | _ -> failwith "Could not unwrap top zipper!"
 
 let parse (ts : tok list) (e : exp) : exp list =
-    clear_mems;
+    Hashtbl.clear mems;
     let rec parse (p : pos) (ts : tok list) (z : zipper) : zipper list =
         match ts with
         | []       -> derive p t_eof z
@@ -92,7 +80,7 @@ let list_product (l1 : 'a list) (l2 : ('a list) list) : ('a list) list =
 let rec ast_list_of_exp (e : exp) : Pyast.ast list =
     match e with
     | Tok _       -> []
-    | Seq (l, es) -> List.map (fun es' -> Pyast.Seq (l, es')) (List.fold_right list_product (List.map ast_list_of_exp es) [[]])
+    | Seq (l, es) -> List.map (fun es' -> Pyast.Ast (l, es')) (List.fold_right list_product (List.map ast_list_of_exp es) [[]])
     | Alt es      -> List.concat (List.map ast_list_of_exp !es)
 
 let ast_list_of_exp_list (es : exp list) : Pyast.ast list =

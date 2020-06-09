@@ -65,12 +65,12 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     if production_no > 0:
         production_name += f"-{production_no}"
     if len(parts) == 0:
-        return f"make_eps_node (lazy [Pyast.Seq (\"{production_name}\", [])])"
+        return f"make_eps_node (lazy [Pyast.Ast (\"{production_name}\", [])])"
     elif len(parts) == 1:
-        return f"{{ tag = Red_tag (List.map (fun t -> Pyast.Seq (\"{production_name}\", [t]))); child1 = {parts[0]}; " \
+        return f"{{ tag = Red_tag (List.map (fun t -> Pyast.Ast (\"{production_name}\", [t]))); child1 = {parts[0]}; " \
             f"child2 = false_node; {NODE_FILLER} }}"
     elif len(parts) == 2:
-        return f"{{ tag = Red_tag (List.map (fun (Pyast.Seq (_, [t1; t2])) -> Pyast.Seq (\"{production_name}\", [t1; t2]))); " \
+        return f"{{ tag = Red_tag (List.map (fun (Pyast.Ast (_, [t1; t2])) -> Pyast.Ast (\"{production_name}\", [t1; t2]))); " \
             f"child1 = {{ tag = Seq_tag; child1 = {parts[0]}; child2 = {parts[1]}; {NODE_FILLER} }};" \
             f"child2 = false_node; {NODE_FILLER} }}"
     else:

@@ -109,31 +109,31 @@ let rec make_opt_seq_node_left child children =
   match child.tag with
   | Alt_tag when child.children == [] -> make_empty_node ()
   | Eps_tag t -> (match children with
-             | [] -> make_eps_node (lazy (List.map (fun t -> Seq ("<eps>", [t])) (Lazy.force t)))
+             | [] -> make_eps_node (lazy (List.map (fun t -> Pyast.Ast ("<eps>", [t])) (Lazy.force t)))
              | [child2] -> make_opt_red_node child2 (fun xs ->
                                let t' = Lazy.force t in
                         let f z = function
-                          | y -> Seq ("<seq>", [z; y]) in
+                          | y -> Pyast.Ast ("<seq>", [z; y]) in
                         List.concat (List.map (fun z -> List.map (f z) xs) t')
                              )
              | _ -> make_red_node (make_seq_node children) (fun xs ->
                         let t' = Lazy.force t in
                         let f z = function
-                          | Seq (l, ys) -> Seq (l, z :: ys) in
+                          | Pyast.Ast (l, ys) -> Pyast.Ast (l, z :: ys) in
                         List.concat (List.map (fun z -> List.map (f z) xs) t')
                       ))
   | Seq_tag -> make_red_node (make_seq_node (List.append child.children children)) (fun ts ->
                    let g = function
-                         | Seq (l, ys) -> let (bs, cs) = split (List.length child.children) ys in
-                                          Seq (l, (Seq ("<seq>", bs) :: cs)) in  (* TODO: Are these labels correct? *)
+                         | Pyast.Ast (l, ys) -> let (bs, cs) = split (List.length child.children) ys in
+                                          Pyast.Ast (l, (Pyast.Ast ("<seq>", bs) :: cs)) in  (* TODO: Are these labels correct? *)
                    List.map g ts
                  )
   | Red_tag f -> (match children with
                   | [] -> make_red_node (List.hd child.children) (fun ts ->
-                            List.map (fun t -> Seq ("<seq>", [t])) (f ts))
+                            List.map (fun t -> Pyast.Ast ("<seq>", [t])) (f ts))
                   | _ -> make_red_node (make_opt_seq_node_left (List.hd child.children) children) (fun ts ->
                              let g = function
-                               | Seq (l, y :: ys) -> List.map (fun y' -> Seq (l, y' :: ys)) (f [y])
+                               | Pyast.Ast (l, y :: ys) -> List.map (fun y' -> Pyast.Ast (l, y' :: ys)) (f [y])
                                | _ -> failwith "bad match in make_opt_seq_node_left" in
                              List.concat (List.map g ts)
                            ))
@@ -164,31 +164,31 @@ let seq_node_set_opt_left (node : node) (child : node) (children : node list) : 
   match child.tag with
   | Alt_tag when child.children == [] -> empty_node_set node; true
   | Eps_tag t -> (match children with
-             | [] -> eps_node_set node (lazy (List.map (fun t -> Seq ("<eps>", [t])) (Lazy.force t))); true
+             | [] -> eps_node_set node (lazy (List.map (fun t -> Pyast.Ast ("<eps>", [t])) (Lazy.force t))); true
              | [child2] -> red_node_set_opt node child2 (fun xs ->
                                let t' = Lazy.force t in
                         let f z = function
-                          | y -> Seq ("<seq>", [z; y]) in
+                          | y -> Pyast.Ast ("<seq>", [z; y]) in
                         List.concat (List.map (fun z -> List.map (f z) xs) t')
                              ); true
              | _ -> red_node_set node (make_seq_node children) (fun xs ->
                         let t' = Lazy.force t in
                         let f z = function
-                          | Seq (l, ys) -> Seq (l, z :: ys) in
+                          | Pyast.Ast (l, ys) -> Pyast.Ast (l, z :: ys) in
                         List.concat (List.map (fun z -> List.map (f z) xs) t')
                       ); true )
   | Seq_tag -> red_node_set node (make_seq_node (List.append child.children children)) (fun ts ->
                    let g = function
-                         | Seq (l, ys) -> let (bs, cs) = split (List.length child.children) ys in
-                                          Seq (l, (Seq ("<seq>", bs) :: cs)) in  (* TODO: Are these labels correct? *)
+                         | Pyast.Ast (l, ys) -> let (bs, cs) = split (List.length child.children) ys in
+                                          Pyast.Ast (l, (Pyast.Ast ("<seq>", bs) :: cs)) in  (* TODO: Are these labels correct? *)
                    List.map g ts
                  ); true
   | Red_tag f -> (match children with
                   | [] -> red_node_set_opt node (List.hd child.children) (fun ts ->
-                            List.map (fun t -> Seq ("<seq>", [t])) (f ts))
+                            List.map (fun t -> Pyast.Ast ("<seq>", [t])) (f ts))
                   | _ -> red_node_set_opt node (make_opt_seq_node_left (List.hd child.children) children) (fun ts ->
                              let g = function
-                               | Seq (l, y :: ys) -> List.map (fun y' -> Seq (l, y' :: ys)) (f [y]) in
+                               | Pyast.Ast (l, y :: ys) -> List.map (fun y' -> Pyast.Ast (l, y' :: ys)) (f [y]) in
                              List.concat (List.map g ts)
                            ))
   | _ -> seq_node_set node (child :: children); false
@@ -279,11 +279,11 @@ let rec parse_tree (l : node) : ast list =
           | Seq_tag ->
              match l.children with
              | [] ->
-                [Seq ("<seq>", [])]
+                [Pyast.Ast ("<seq>", [])]
              | _ ->
                 let a = (List.map parse_tree l.children) in
                 let b = cats' a in
-                let c = List.map (fun x -> Seq ("<seq>", x)) b in
+                let c = List.map (fun x -> Pyast.Ast ("<seq>", x)) b in
                 c in
         l.ast <- result;
         result)) in
@@ -307,7 +307,7 @@ let rec derive (l : node) (c : token) : node =
   | (Seq_tag, []) -> let_result (make_empty_node ()) (fun _ -> ())
   | (Token_tag (pred, clas), _) -> let_result
      (if pred c
-      then make_eps_node (lazy [Seq (snd c, [])])
+      then make_eps_node (lazy [Pyast.Ast (snd c, [])])
       else make_empty_node ())
      (fun _ -> ())
   | (Red_tag f, _) -> let_result
@@ -321,7 +321,7 @@ let rec derive (l : node) (c : token) : node =
      (fun result ->
        match l.children with
        | [] -> eps_node_set result (lazy [])
-       | [x] -> red_node_set_opt result (derive x c) (fun ts -> List.map (fun t -> Seq ("<seq>", [t])) ts); ()
+       | [x] -> red_node_set_opt result (derive x c) (fun ts -> List.map (fun t -> Pyast.Ast ("<seq>", [t])) ts); ()
        | x :: xs ->
           if not (nullable x)
           then (seq_node_set_opt_left result (derive x c) xs; ())
@@ -338,14 +338,14 @@ let rec derive (l : node) (c : token) : node =
                         (make_opt_seq_node_left node remaining)
                         (fun remaining' ->
                           let e = function
-                            | Seq (_, asts) -> asts
+                            | Pyast.Ast (_, asts) -> asts
                             | ast -> raise (Failure (Printf.sprintf "derive.seq.rr %s %d %d %d" (snd c) (List.length skipped) (List.length xs) (List.length remaining'))) in
                           let d = List.map e (remaining') in
                           let a = (parse_tree x)::(List.map parse_tree skipped) in
                           let b = cats' a in
                           let b' = cats' [b; d] in
                           let b'' = List.map List.concat b' in
-                          let c = List.map (fun x -> Seq ("<seq>", x)) b'' in
+                          let c = List.map (fun x -> Pyast.Ast ("<seq>", x)) b'' in
                           c) in
                alt_node_set_opt result (make_opt_seq_node_left (derive x c) xs :: List.map rr xs'); ())
   | (Unknown_tag, _) -> failwith "Encountered Unknown_tag in derivation."

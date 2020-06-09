@@ -62,9 +62,9 @@ def str_of_production(production: Production, desc: GrammarDescription, prefix: 
     if production_no > 0:
         production_name += f"-{production_no}"
     if len(parts) == 0:
-        return f"lazy (Eps (lazy [Pyast.Seq (\"{production_name}\", [])]))"
+        return f"lazy (Eps (lazy [Pyast.Ast (\"{production_name}\", [])]))"
     elif len(parts) == 1:
-        return f"lazy (Red ((fun t -> Pyast.Seq (\"{production_name}\", [t])), {parts[0]}))"
+        return f"lazy (Red ((fun t -> Pyast.Ast (\"{production_name}\", [t])), {parts[0]}))"
     elif len(parts) == 2:
         return f"lazy (Seq (\"{production_name}\", {parts[0]}, {parts[1]}))"
     else:
@@ -133,14 +133,14 @@ print_endline (string_of_ast t);;
 
 lazy (Alt 
       (lazy (Red 
-             (Pyast.Seq (l, 
-                         [t; Pyast.Seq (l'', ts)]) 
-              -> Pyast.Seq (l, t::ts)), 
+             (Pyast.Ast (l, 
+                         [t; Pyast.Ast (l'', ts)]) 
+              -> Pyast.Ast (l, t::ts)), 
              lazy (Seq ("atom-1", 
                         pwd_binary_rule_L_PAR, 
                         lazy (Seq ("atom-1", 
                                    pwd_binary_rule_atom__opt_grp_1__3, 
-                                   pwd_binary_rule_R_PAR))))), lazy (Red ((fun t -> Pyast.Seq ("atom-2", [t])), pwd_binary_rule_TRUE))))
+                                   pwd_binary_rule_R_PAR))))), lazy (Red ((fun t -> Pyast.Ast ("atom-2", [t])), pwd_binary_rule_TRUE))))
 
 """
 
