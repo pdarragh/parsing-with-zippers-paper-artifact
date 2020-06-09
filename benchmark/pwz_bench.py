@@ -101,9 +101,9 @@ def benchmark(args):
                    strs_of_parsers(parsers), args.resume, args.quota_factor, args.max_quota)
 
 
-def post_process(args):
-    parsers = process_parser_choices(args.parsers)
-    post_process_benchmark_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite)
+def collate(args):
+    parsers = process_parser_choices(args.parser)
+    collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite)
 
 
 if __name__ == '__main__':
@@ -186,14 +186,14 @@ if __name__ == '__main__':
                               help="the maximum allowable quota; executions that go beyond this will be abandoned")
     bench_parser.set_defaults(func=benchmark)
 
-    process_parser = subparsers.add_parser('post-process')
-    process_parser.add_argument('-I', '--input-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
+    collate_parser = subparsers.add_parser('collate')
+    collate_parser.add_argument('-I', '--input-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
                                 help="the directory to retrieve completed benchmarking results from")
-    process_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
+    collate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                 help="the parser to benchmark; can be given more than once or left out to run all parsers")
-    process_parser.add_argument('-o', '--overwrite', action='store_true',
+    collate_parser.add_argument('-o', '--overwrite', action='store_true',
                                 help="delete the existing output file if it already exists")
-    process_parser.set_defaults(func=post_process)
+    collate_parser.set_defaults(func=collate)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)

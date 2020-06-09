@@ -5,7 +5,7 @@ from re import compile as re_compile
 from typing import Dict, List, Optional
 
 
-__all__ = ['post_process_benchmark_results']
+__all__ = ['collate_benchmarking_results']
 
 
 FILENAME = 'Filename'
@@ -18,9 +18,9 @@ TPR_BIGDIG_RE = re_compile(r'(\d+)\.0+')
 TPR_SIGFIG_RE = re_compile(r'(\d+\.0*[1-9]\d{2})\d*')
 
 
-def post_process_benchmark_results(bench_file_dir: Path, parsers: List[str], overwrite: bool = False):
+def collate_benchmarking_results(bench_file_dir: Path, parsers: List[str], overwrite: bool = False):
     out_file = bench_file_dir / 'all-bench-results.csv'
-    print(f"Processing benchmarking results and outputting results in {out_file}...")
+    print(f"Collating benchmarking results and outputting results in {out_file}...")
     if out_file.is_file():
         if not overwrite:
             raise RuntimeError(f"Output file {out_file} already exists. Aborting!")
@@ -53,7 +53,7 @@ def post_process_benchmark_results(bench_file_dir: Path, parsers: List[str], ove
             for parser in parsers:
                 row[parser_fields[parser]] = compute_spt(tprs[filename].get(parser, None), toks[filename])
             out_writer.writerow(row)
-    print(f"Benchmarking post-processing complete.")
+    print(f"Benchmarking collation complete.")
 
 
 def float_of_raw_tpr(tpr: str) -> Optional[float]:

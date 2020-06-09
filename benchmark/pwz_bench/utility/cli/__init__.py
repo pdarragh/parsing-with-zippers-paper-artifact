@@ -1,5 +1,5 @@
 from .benchmark import *
-from .benchmark_post_process import *
+from .collate_benchmark_results import *
 from .parse import *
 from .prepare import *
 from .verify import *

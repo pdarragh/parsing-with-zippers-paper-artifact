@@ -157,12 +157,14 @@ benchmark: $(BENCH_FILE_DIR)
 ################################################################################
 # Post-Processing Targets
 
-.PHONY: post-process
+.PHONY: post-process collate
 
-post-process:
+post-process: collate
+
+collate:
 	if [ ! -d "$(BENCH_FILE_DIR)" ]; then echo "$(BENCH_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
-	$(PYTHON) $(driver) post-process --overwrite --bench-file-dir $(BENCH_FILE_DIR) $(parser_opts)
+	$(PYTHON) $(driver) collate --overwrite --bench-file-dir $(BENCH_FILE_DIR) $(parser_opts)
 
 ################################################################################
 # Usage-Specific Targets
