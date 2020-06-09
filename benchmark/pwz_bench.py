@@ -22,6 +22,7 @@ DEFAULT_PY_DIR = THIS_DIR / 'pys'
 DEFAULT_LEX_DIR = THIS_DIR / 'lexes'
 DEFAULT_AST_DIR = THIS_DIR / 'parses'
 DEFAULT_BENCH_DIR = THIS_DIR / 'bench'
+DEFAULT_COLLATE_FILE = DEFAULT_BENCH_DIR / 'collated-results.csv'
 
 PARSER_CHOICES = list(SUPPORTED_PARSERS.keys()) + [NONE, ALL]
 
@@ -103,7 +104,7 @@ def benchmark(args):
 
 def collate(args):
     parsers = process_parser_choices(args.parser)
-    collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite)
+    collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite, args.output_file.resolve())
 
 
 if __name__ == '__main__':
@@ -189,6 +190,8 @@ if __name__ == '__main__':
     collate_parser = subparsers.add_parser('collate')
     collate_parser.add_argument('-I', '--input-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
                                 help="the directory to retrieve completed benchmarking results from")
+    collate_parser.add_argument('-O', '--output-file', '--collated-results-file', type=Path, default=DEFAULT_COLLATE_FILE,
+                                help="the name of the file to write collated results to")
     collate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                 help="the parser to benchmark; can be given more than once or left out to run all parsers")
     collate_parser.add_argument('-o', '--overwrite', action='store_true',

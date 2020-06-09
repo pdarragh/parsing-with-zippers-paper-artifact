@@ -9,7 +9,7 @@ __all__ = ['collate_benchmarking_results']
 
 
 # Default name of the output file.
-DEFAULT_OUT_FILENAME = 'all-bench-results.csv'
+DEFAULT_OUT_FILENAME = 'collated-results.csv'
 # These constants are for titling the columns in the output CSV.
 FILENAME = 'Filename'
 TOKENS = 'Tokens'
