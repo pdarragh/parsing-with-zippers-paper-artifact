@@ -1,5 +1,5 @@
 open Types
-open Cst
+open Ast
 
 (*
 TEST GRAMMARS FOR PARSING WITH ZIPPERS
@@ -37,11 +37,11 @@ A NOTE ON LIMITATIONS IMPOSED BY OCAML
    syntax system to implement this completely within the time limit afforded us
    by the author response. However, it is something we would like to provide.
 
-A NOTE ON CST EXTRACTION
+A NOTE ON AST EXTRACTION
 
    For test cases that are expected to return a finite number of results, we use
-   the function `cst_list_of_exp_list` from the Cst module (cst.ml) to extract
-   an CST from the resulting parse forest. This allows us to enumerate the
+   the function `ast_list_of_exp_list` from the Ast module (ast.ml) to extract
+   an AST from the resulting parse forest. This allows us to enumerate the
    number of results arising from ambiguous grammars.
 
    However, the process of extraction can be exponential. In our paper, and also
@@ -141,22 +141,22 @@ let instrumented_parse ((module G) : (module Grammar)) (str : string) : (exp lis
   Pwz.instrumented_parse (tok_list_of_string str tok_assoc) G.start
 
 (*
-parse_to_cst_list
+parse_to_ast_list
 
    This function wraps the above `parse` function.
 
-   It converts the list of expressions produced by parsing into a list of CST
+   It converts the list of expressions produced by parsing into a list of AST
    elements. This is useful for separating ambiguous parse results into separate
    parse trees, instead of the `parse` function's result (which is often an Alt
    containing multiple children).
 
-   NOTE: This function eagerly extracts expressions into CST nodes. Some of the
+   NOTE: This function eagerly extracts expressions into AST nodes. Some of the
    below grammars are designed to produce an infinite number of resulting
    expressions, which means that this function would be tasked with producing an
    eager infinite list. We recommend against its use in these cases.
 *)
-let parse_to_cst_list ((module G) : (module Grammar)) (str : string) : cst list =
-  cst_list_of_exp_list (parse (module G) str)
+let parse_to_ast_list ((module G) : (module Grammar)) (str : string) : ast list =
+  ast_list_of_exp_list (parse (module G) str)
 
 (*
 Grammar1: The empty grammar through self-reference.
@@ -491,7 +491,7 @@ let grammar_test_results () : (int * ((int list) * (int list))) list =
     let test_case (idx : int) ((str, maybe_expected_num_of_parses) : (string * (int option))) : int option =
       Printf.printf "    case %d: \"%s\"..." (idx + 1) str;
       let success = match maybe_expected_num_of_parses with
-        | Some expected_num_of_parses -> List.length (parse_to_cst_list (module G) str) == expected_num_of_parses
+        | Some expected_num_of_parses -> List.length (parse_to_ast_list (module G) str) == expected_num_of_parses
         | None                        -> List.length (parse (module G) str) > 0
       in
       if success

@@ -31,7 +31,7 @@ let rec e_bottom = { m = m_bottom; e' = Alt (ref []) }
 
 let worklist : (zipper list) ref = ref []
 
-let tops : exp list ref = ref []
+let tops : (exp list) ref = ref []
 
 let derive (p : pos) ((t, s) : tok) ((e', m) : zipper) : unit =
   let rec d_d (c : cxt) (e : exp) : unit =
