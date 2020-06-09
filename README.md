@@ -12,6 +12,8 @@ This artifact is organized into two top-level directories:
   * `interact` provides a minimal implementation of the Parsing with Zippers
     algorithm and a set of example grammars that can be used for interactive
     testing.
+  * `code-from-appendix` contains a copy of the code from the appendix of the
+    Parsing with Zippers paper.
 
 Instructions for compilation, setup, and use appear in the `README.md` files
 located within each of these directories.
