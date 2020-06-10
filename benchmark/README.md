@@ -107,6 +107,15 @@ To run all of these targets in series automatically, you can do:
 $ make all
 ```
 
+### Producing the Data from the Paper
+
+We have also included the original data used to produce the paper for
+comparison. Graphs can be produced from this data using:
+
+```
+$ make paper-graphs
+```
+
 ### Targets
 
 The Makefile accepts many targets. However, only a few of them are meant for
@@ -146,6 +155,7 @@ target's parameters can also be used with the first target.
 | `post-process`    | Runs `collate` and `graphs`.                                                                          |                                                                                       |
 | `collate`         | Collates the results of `benchmark` into a single `.csv` file, `$COLLATED_RESULTS_FILE`.              | `$COLLATED_RESULTS_FILE`                                                              |
 | `graphs`          | Produces a PDF of the graphs used in the paper.                                                       | `GRAPHS_FILE_DIR`, `$OUT_FILE_DIR`, `$COLLATED_RESULTS_FILE`, `$RECURSIVE_CALLS_FILE` |
+| `paper-graphs`    | Produces a PDF like `graphs`, but using the data we used for producing the paper.                     |                                                                                       |
 | `parse`           | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.         | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`                                        |
 | `verify`          | Verifies all existing `.ast` files against the Menhir baseline.                                       | `$AST_FILE_DIR`                                                                       |
 | `compile-profile` | Like `compile`, but includes instrumentation for profiling.                                           | (same as `compile`)                                                                   |
