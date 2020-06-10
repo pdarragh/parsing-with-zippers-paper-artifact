@@ -9,35 +9,42 @@ __all__ = ['generate_graphs_pdf_file']
 
 
 GRAPHS_TEX_FILE = 'graphs.tex'
-DEFAULT_CUBIC_FILE = 'cubic.csv'
-DEFAULT_RESULTS_FILE = 'all-bench-results.csv'
+DEFAULT_RECURSIVE_CALLS_FILE = 'recursive_calls.csv'
+DEFAULT_COLLATED_RESULTS_FILE = 'collated-results.csv'
 DEFAULT_CALCULATED_RESULTS_FILE = 'calculated-results.csv'
 
 
 def generate_graphs_pdf_file(graphs_dir: Path, out_dir: Path, overwrite: bool = False,
-                             cubic_file: Optional[Path] = None, results_file: Optional[Path] = None,
-                             calculated_results_file: Optional[Path] = None):
+                             recursive_calls_file: Optional[Path] = None, collated_results_file: Optional[Path] = None,
+                             calculated_results_file: Optional[Path] = None, results_pdf_file: Optional[Path] = None):
     graphs_tex_file = graphs_dir / GRAPHS_TEX_FILE
+    graphs_pdf_file = graphs_tex_file.with_suffix('.pdf')
     if not overwrite and graphs_tex_file.is_file():
         raise RuntimeError(f"Output file {graphs_tex_file} already exists. Aborting!")
-    if cubic_file is None:
-        cubic_file = graphs_dir / DEFAULT_CUBIC_FILE
-    if results_file is None:
-        results_file = graphs_dir / DEFAULT_RESULTS_FILE
+    if recursive_calls_file is None:
+        recursive_calls_file = graphs_dir / DEFAULT_RECURSIVE_CALLS_FILE
+    if collated_results_file is None:
+        collated_results_file = graphs_dir / DEFAULT_COLLATED_RESULTS_FILE
     if calculated_results_file is None:
-        calculated_results_file = graphs_dir / DEFAULT_CUBIC_FILE
+        calculated_results_file = graphs_dir / DEFAULT_RECURSIVE_CALLS_FILE
+    if results_pdf_file is None:
+        results_pdf_file = out_dir / graphs_pdf_file.name
     print(f"Generating LaTeX file for graphs at {graphs_tex_file}...")
-    graphs_tex_file.write_text(GRAPHS_FILE_CONTENTS.format(cubic=str(cubic_file), results=str(results_file),
-                                                           calculated_dir=str(calculated_results_file.parent),
-                                                           calculated=calculated_results_file.name))
-    graphs_pdf_file = graphs_tex_file.with_suffix('.pdf')
-    graphs_pdf_file_out = out_dir / graphs_pdf_file.name
-    print(f"Generating PDF of graphs at {graphs_pdf_file_out}...")
+    GRAPHS_FILE_TEXT = GRAPHS_FILE_CONTENTS.format(
+        recursive_calls_short=str(recursive_calls_file.relative_to(recursive_calls_file.parent.parent.parent)),
+        collated_results_short=str(collated_results_file.relative_to(collated_results_file.parent.parent.parent)),
+        recursive_calls=str(recursive_calls_file),
+        collated_results=str(collated_results_file),
+        calculated_dir=str(calculated_results_file.parent),
+        calculated=calculated_results_file.name
+    )
+    graphs_tex_file.write_text(GRAPHS_FILE_TEXT)
+    print(f"Generating PDF of graphs at {results_pdf_file}...")
     prev_dir = getcwd()
     chdir(graphs_dir)
     run(['lualatex', graphs_tex_file])
     chdir(prev_dir)
-    move_file(graphs_pdf_file, graphs_pdf_file_out)
+    move_file(graphs_pdf_file, results_pdf_file)
 
 
 GRAPHS_FILE_CONTENTS = """\
@@ -84,8 +91,8 @@ GRAPHS_FILE_CONTENTS = """\
       2020 paper \\emph{{Parsing with Zippers (Functional Pearl)}} by Pierce
       Darragh and Michael D.~Adams.
 
-\\item This document reads graph data from files named \\code{{{cubic}}} and
-      \\code{{{results}}}, so those files should be created before
+\\item This document reads graph data from files named \\code{{{recursive_calls_short}}} and
+      \\code{{{collated_results_short}}}, so those files should be created before
       compiling this document.
 
 \\item This document should be compiled with \\code{{lualatex}}.
@@ -94,7 +101,7 @@ GRAPHS_FILE_CONTENTS = """\
 \\begin{{figure}}
 \\noindent \\centering{{}}\\noindent \\begin{{center}}
 \\pgfplotstableset{{col sep=comma}}
-\\pgfplotstableread{{{cubic}}}\\benchmarkData
+\\pgfplotstableread{{{recursive_calls}}}\\benchmarkData
 \\begin{{tikzpicture}}
 \\begin{{axis}}[
  legend entries={{Measurement, Cubic fitting curve}},
@@ -113,13 +120,13 @@ GRAPHS_FILE_CONTENTS = """\
 \\end{{axis}}
 \\end{{tikzpicture}}
 \\par\\end{{center}}\\vspace{{-1em}}
-\\caption{{\\label{{fig:cubic}}Figure 24 from the paper}}
+\\caption{{\\label{{fig:recursive_calls}}Figure 24 from the paper}}
 \\end{{figure}}
 
 \\begin{{figure}}
 \\noindent \\centering{{}}\\noindent \\begin{{center}}
 \\pgfplotstableset{{col sep=comma}}
-\\pgfplotstableread{{{results}}}\\benchmarkData
+\\pgfplotstableread{{{collated_results}}}\\benchmarkData
 \\begin{{tikzpicture}}[only marks]
 \\begin{{axis}}[
  scaled ticks=false, enlarge x limits=false, xmax=27500, ymode=log,
@@ -146,7 +153,7 @@ GRAPHS_FILE_CONTENTS = """\
 \\begin{{figure}}
 \\noindent \\centering{{}}\\noindent \\begin{{center}}
 \\pgfplotstableset{{col sep=comma}}
-\\pgfplotstableread{{{results}}}\\benchmarkData
+\\pgfplotstableread{{{collated_results}}}\\benchmarkData
 \\begin{{tikzpicture}}[only marks]
 \\begin{{axis}}[
  scaled ticks=false, enlarge x limits=false, xmax=2750, ymode=log,
@@ -177,7 +184,7 @@ GRAPHS_FILE_CONTENTS = """\
 \\vspace{{2em}}
 \\noindent \\begin{{center}}
 \\pgfplotstableset{{col sep=comma}}
-\\pgfplotstableread{{{results}}}\\benchmarkData
+\\pgfplotstableread{{{collated_results}}}\\benchmarkData
 \\begin{{tikzpicture}}[only marks]
 \\begin{{axis}}[
  scaled ticks=false, enlarge x limits=false, xmax=500, ymode=log, % 27500

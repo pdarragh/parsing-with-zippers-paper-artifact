@@ -27,6 +27,7 @@ DEFAULT_OUT_DIR = THIS_DIR / 'out'
 DEFAULT_RECURSIVE_CALLS_FILE = DEFAULT_GRAPHS_DIR / 'recursive-calls.csv'
 DEFAULT_COLLATED_RESULTS_FILE = DEFAULT_OUT_DIR / 'collated-results.csv'
 DEFAULT_CALCULATED_RESULTS_FILE = DEFAULT_OUT_DIR / 'calculated-results.csv'
+DEFAULT_RESULTS_PDF_FILE = DEFAULT_OUT_DIR / 'results.pdf'
 
 PARSER_CHOICES = list(SUPPORTED_PARSERS.keys()) + [NONE, ALL]
 
@@ -121,7 +122,7 @@ def calculate(args):
 def graphs(args):
     generate_graphs_pdf_file(args.input_dir.resolve(), args.output_dir.resolve(), args.overwrite,
                              args.recursive_calls_file.resolve(), args.collated_results_file.resolve(),
-                             args.calculated_results_file.resolve())
+                             args.calculated_results_file.resolve(), args.output_file.resolve())
 
 
 if __name__ == '__main__':
@@ -237,6 +238,8 @@ if __name__ == '__main__':
                                help="the name of the file to read calculated geometric means from")
     graphs_parser.add_argument('-o', '--overwrite', action='store_true',
                               help="delete the existing .tex file if it already exists")
+    graphs_parser.add_argument('--output-file', type=Path, default=DEFAULT_RESULTS_PDF_FILE,
+                               help="the name of the file to output the graphs to")
     graphs_parser.set_defaults(func=graphs)
 
     parsed_args = parser.parse_args()

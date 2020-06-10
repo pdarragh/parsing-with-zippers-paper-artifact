@@ -22,6 +22,7 @@ OUT_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
 RECURSIVE_CALLS_FILE ?= $(GRAPHS_FILE_DIR)/recursive-calls.csv
 COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
 CALCULATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/calculated-results.csv
+RESULTS_PDF_FILE ?= $(OUT_FILE_DIR)/results.pdf
 
 
 TIMEOUT ?= -1
@@ -218,7 +219,8 @@ graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
 		--output-dir $(OUT_FILE_DIR) \
 		--collated-results-file $(COLLATED_RESULTS_FILE) \
 		--recursive-calls-file $(RECURSIVE_CALLS_FILE) \
-		--calculated-results-file $(CALCULATED_RESULTS_FILE)
+		--calculated-results-file $(CALCULATED_RESULTS_FILE) \
+		--output-file $(RESULTS_PDF_FILE)
 
 ################################################################################
 # Usage-Specific Targets
