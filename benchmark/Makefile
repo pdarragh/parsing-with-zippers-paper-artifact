@@ -20,8 +20,10 @@ BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
 GRAPHS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/graphs))
 OUT_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
 RECURSIVE_CALLS_FILE ?= $(GRAPHS_FILE_DIR)/recursive-calls.csv
+PAPER_RESULTS_FILE ?= $(GRAPHS_FILE_DIR)/paper-bench-results.csv
 COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
 CALCULATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/calculated-results.csv
+PAPER_CALCULATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/paper-calculated-results.csv
 RESULTS_PDF_FILE ?= $(OUT_FILE_DIR)/results.pdf
 
 
@@ -199,7 +201,7 @@ benchmark: $(BENCH_FILE_DIR)
 ################################################################################
 # Post-Processing Targets
 
-.PHONY: post-process collate
+.PHONY: post-process collate calculate graphs paper-graphs
 
 post-process: collate calculate graphs
 
@@ -221,6 +223,12 @@ graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
 		--recursive-calls-file $(RECURSIVE_CALLS_FILE) \
 		--calculated-results-file $(CALCULATED_RESULTS_FILE) \
 		--output-file $(RESULTS_PDF_FILE)
+
+paper-graphs: $(GRAPHS_FILE_DIR) $(OUT_FILE_DIR)
+	export COLLATED_RESULTS_FILE=PAPER_RESULTS_FILE
+	export CALCULATED_RESULTS_FILE=PAPER_CALCULATED_RESULTS_FILE
+	$(MAKE) calculate --no-print-directory
+	$(MAKE) graphs --no-print-directory
 
 ################################################################################
 # Usage-Specific Targets
