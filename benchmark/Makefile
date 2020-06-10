@@ -11,15 +11,15 @@ BENCH_PARSERS ?= $(PARSE_PARSERS)
 TGZ_FILE ?= $(strip $(abspath $(mkfile_abs_dir)/Python-3.4.3.tgz))
 GRAMMAR_FILE ?= $(mkfile_abs_dir)/pwz_bench/utility/transformed-python-3.4.grammar
 START_SYMBOLS ?= single_input file_input eval_input
-GEN_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/gen))
-GEN_MAKEFILE ?= $(GEN_DIR)/Makefile
+GEN_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/gen))
+GEN_MAKEFILE ?= $(GEN_FILE_DIR)/Makefile
 PY_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
+GRAPHS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/graphs))
 OUT_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
 COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
-GRAPHS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/graphs))
 RECURSIVE_CALLS_FILE ?= $(GRAPHS_FILE_DIR)/recursive-calls.csv
 
 
@@ -29,8 +29,8 @@ MAX_QUOTA ?= 1000
 
 start_symbol_opts := $(patsubst %,-s %, $(START_SYMBOLS))
 
-BENCH_OUT ?= $(GEN_DIR)/pwz_bench
-PARSE_OUT ?= $(GEN_DIR)/pwz_parse
+BENCH_OUT ?= $(GEN_FILE_DIR)/pwz_bench
+PARSE_OUT ?= $(GEN_FILE_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
@@ -84,12 +84,12 @@ clean-all: clean-generate clean-py clean-lex clean-parse clean-bench
 
 clean-light:
 	@echo Lightly cleaning...
-	-$(MAKE) -C $(GEN_DIR) clean
+	-$(MAKE) -C $(GEN_FILE_DIR) clean
 	@echo Clean complete.
 
 clean-generate:
-	@echo Removing $(GEN_DIR)...
-	-$(RM) -r $(GEN_DIR)
+	@echo Removing $(GEN_FILE_DIR)...
+	-$(RM) -r $(GEN_FILE_DIR)
 	@echo Removal complete.
 
 clean-py:
@@ -143,16 +143,16 @@ generate: $(GEN_MAKEFILE)
 compile: $(BENCH_OUT) $(PARSE_OUT)
 
 $(GEN_MAKEFILE):
-	@echo Generating output files in $(GEN_DIR)...
-	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) --output-dir $(GEN_DIR) -p all
-	$(MAKE) -C $(GEN_DIR) generate
+	@echo Generating output files in $(GEN_FILE_DIR)...
+	$(PYTHON) $(driver) generate $(GRAMMAR_FILE) $(start_symbol_opts) --output-dir $(GEN_FILE_DIR) -p all
+	$(MAKE) -C $(GEN_FILE_DIR) generate
 	@echo File generation complete.
 
 $(BENCH_OUT): $(GEN_MAKEFILE)
-	$(MAKE) -C $(GEN_DIR) bench
+	$(MAKE) -C $(GEN_FILE_DIR) bench
 
 $(PARSE_OUT): $(GEN_MAKEFILE)
-	$(MAKE) -C $(GEN_DIR) parse
+	$(MAKE) -C $(GEN_FILE_DIR) parse
 
 ################################################################################
 # Benchmarking Target
@@ -217,4 +217,4 @@ verify:
 # This is necessary to run the code with instrumentation. It it useful for
 # debugging, but otherwise should not be used.
 compile-profile: $(GEN_MAKEFILE)
-	$(MAKE) -C $(GEN_DIR) profile
+	$(MAKE) -C $(GEN_FILE_DIR) profile
