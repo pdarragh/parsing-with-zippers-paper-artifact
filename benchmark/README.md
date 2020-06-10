@@ -84,30 +84,46 @@ benchmark`) and it will pick up right where you left off.
 
 ### Targets
 
-The following targets are supported from the root directory, used as `make
-<target>`. Parameters are explained in the next section. Lowercase parameter
-names here indicate targets which are depended upon by the current target,
-indicating that the current target uses all the parameters of the depended-upon
-target as well.
+The Makefile in this directory accepts many targets. However, only a few of them
+are meant for general use. These are:
 
-| Target Name      | Summary                                                                                                 | Parameters Used                                         |
-|------------------|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------|
-| `default`        | Runs `clean-light`, `generate`, and `build`.                                                            | `clean`, `generate`, `build`                            |
-| `all`            | Runs `clean-all`, `prepare`, `lex`, `generate`, and `build`.                                            | `clean`, `clean-lex`, `lex`, `generate`, `build`        |
-| `clean-light`    | Runs the `clean` target in `$OUT_DIR/Makefile`.                                                         | `$OUT_DIR`                                              |
-| `clean-generate` | Deletes `$OUT_DIR`.                                                                                     |                                                         |
-| `clean-py`       | Deletes `$PY_FILE_DIR`.                                                                                 | `$PY_FILE_DIR`                                          |
-| `clean-lex`      | Deletes `$LEX_FILE_DIR`.                                                                                | `$LEX_FILE_DIR`                                         |
-| `clean-parse`    | Deletes `$AST_FILE_DIR`.                                                                                | `$AST_FILE_DIR`                                         |
-| `clean-bench`    | Deletes `$BENCH_FILE_DIR`.                                                                              | `$BENCH_FILE_DIR`                                       |
-| `clean-all`      | Runs `clean-generate`, `clean-py`, `clean-lex`, `clean-parse`, and `clean-bench`.                       | `clean`, `clean-lex`, `clean-parse`                     |
-| `generate`       | Generates all the files needed for compiling the executables. Code will be placed in `$OUT_DIR`.        | `$OUT_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                 |
-| `build`          | Compiles the executables, `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).               | `$BENCH_OUT`, `$PARSE_OUT`, `generate`                  |
-| `prepare`        | Extracts the necessary files from the Python source code tarball into `$PY_FILE_DIR`.                   | `$TGZ_FILE`, `$PY_FILE_DIR`                             |
-| `lex`            | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR` for later use. | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`               |
-| `benchmark`      | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                         | `$LEX_FILE_DIR`, `$BENCH_OUT`, `build`                  |
-| `parse`          | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.           | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`, `build` |
-| `verify`         | Verifies all existing `.ast` files against the Menhir baseline.                                         | `$AST_FILE_DIR`                                         |
+  * `default` (the target that runs if you simply do `make` with no arguments)
+  * `all` (runs everything without stopping)
+  * `prepare` (prepares the directory for benchmarking, but does not start the
+    benchmarking process)
+  * `benchmark` (after preparing, runs the benchmarking code)
+  * `post-process` (after benchmarking, produces the graphs and calculations
+    used in the paper)
+
+Below, we give the full list of supported targets (each used as `make <target>`)
+and the parameters they can interact with. Parameters are explained in the next
+section. If a target's summary says that it runs another target, the second
+target's parameters can also be used with the first target.
+
+| Target Name       | Summary                                                                                               | Parameters Used                                                                       |
+|-------------------|-------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| `default`         | Runs `prepare`.                                                                                       |                                                                                       |
+| `all`             | Runs `clean-all`, `prepare`, `benchmark`.                                                             |                                                                                       |
+| `clean`           | Runs `clean-light`.                                                                                   |                                                                                       |
+| `clean-light`     | Runs the `clean` target in `$GEN_FILE_DIR/Makefile`.                                                  | `$GEN_FILE_DIR`                                                                       |
+| `clean-generate`  | Deletes `$GEN_FILE_DIR`.                                                                              | `$GEN_FILE_DIR`                                                                       |
+| `clean-py`        | Deletes `$PY_FILE_DIR`.                                                                               | `$PY_FILE_DIR`                                                                        |
+| `clean-lex`       | Deletes `$LEX_FILE_DIR`.                                                                              | `$LEX_FILE_DIR`                                                                       |
+| `clean-benchmark` | Deletes `$BENCH_FILE_DIR`.                                                                            | `$BENCH_FILE_DIR`                                                                     |
+| `clean-parse`     | Deletes `$AST_FILE_DIR`.                                                                              | `$AST_FILE_DIR`                                                                       |
+| `clean-all`       | Runs `clean-generate`, `clean-py`, `clean-lex`, `clean-parse`, and `clean-bench`.                     |                                                                                       |
+| `prepare`         | Runs `extract`, `lex`, `generate`, and `compile`.                                                     |                                                                                       |
+| `extract`         | Extracts the necessary files from the Python source code tarball `$TGZ_FILE` into `$PY_FILE_DIR`.     | `$TGZ_FILE`, `$PY_FILE_DIR`                                                           |
+| `lex`             | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR`.             | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`                                             |
+| `generate`        | Generates all the files needed for compiling the executables. Code will be placed in `$GEN_FILE_DIR`. | `$GEN_FILE_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                                          |
+| `compile`         | Compiles the executables `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).              | `$BENCH_OUT`, `$PARSE_OUT`                                                            |
+| `benchmark`       | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                       | `$LEX_FILE_DIR`, `$BENCH_FILE_DIR`, `$BENCH_OUT`                                      |
+| `post-process`    | Runs `collate` and `graphs`.                                                                          |                                                                                       |
+| `collate`         | Collates the results of `benchmark` into a single `.csv` file, `$COLLATED_RESULTS_FILE`.              | `$COLLATED_RESULTS_FILE`                                                              |
+| `graphs`          | Produces a PDF of the graphs used in the paper.                                                       | `GRAPHS_FILE_DIR`, `$OUT_FILE_DIR`, `$COLLATED_RESULTS_FILE`, `$RECURSIVE_CALLS_FILE` |
+| `parse`           | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.         | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`                                        |
+| `verify`          | Verifies all existing `.ast` files against the Menhir baseline.                                       | `$AST_FILE_DIR`                                                                       |
+| `compile-profile` | Like `compile`, but includes instrumentation for profiling.                                           | (same as `compile`)                                                                   |
 
 ### Parameters
 
@@ -118,25 +134,29 @@ need to specify any parameters to run the targets. Relative paths are given
 relative to the root directory of this repository (which should be where this
 README is located).
 
-| Parameter Name   | Summary                                                               | Default Value                                        |
-|------------------|-----------------------------------------------------------------------|------------------------------------------------------|
-| `PYTHON`         | Path to Python 3.7+ executable.                                       | `python3`                                            |
-| `TGZ_FILE`       | Path to the Python source code tarball.                               | `./Python-3.4.3.tgz`                                 |
-| `GRAMMAR_FILE`   | Path to Python grammar used for parser generation.                    | `./pwz_bench/utility/transformed-python-3.4.grammar` |
-| `START_SYMBOLS`  | Space-separated list of start symbols in `$GRAMMAR_FILE`.             | `single_input file_input eval_input`                 |
-| `OUT_DIR`        | Directory to output all generated code.                               | `./out/`                                             |
-| `PY_FILE_DIR`    | Directory where base `.py` files are located.                         | `./pys/`                                             |
-| `LEX_FILE_DIR`   | Directory where `.lex` files are/should be located.                   | `./lexes/`                                           |
-| `AST_FILE_DIR`   | Directory where `.ast` output files should be saved.                  | `./parses/`                                          |
-| `BENCH_FILE_DIR` | Directory where benchmarking `.bench` files should be saved.          | `./bench/`                                           |
-| `BENCH_OUT`      | Name of the benchmarking executable.                                  | `$OUT_DIR/pwz_bench`                                 |
-| `PARSE_OUT`      | Name of the parsing executable.                                       | `$OUT_DIR/pwz_parse`                                 |
-| `TIMEOUT`        | Maximum length of timeout during benchmarking in seconds.             | -1 (no maximum timeout)                              |
-| `QUOTA_FACTOR`   | The factor by which to increase the quota during subsequent runs.     | 3                                                    |
-| `MAX_QUOTA`      | The maximum allowable quota value. Benchmarks that go over this fail. | 1000                                                 |
-| `VERIFY_PARSERS` | Space-separated list of parsers to run for `verify` target.           | (every parser except Menhir)                         |
-| `PARSE_PARSERS`  | Space-separated list of parsers to run for `parse` target.            | `menhir $(VERIFY_PARSERS)`                           |
-| `BENCH_PARSERS`  | Space-separated list of parsers to run for `bench` target.            | `$PARSE_PARSERS`                                     |
+| Parameter Name          | Summary                                                                         | Default Value                                        |
+|-------------------------|---------------------------------------------------------------------------------|------------------------------------------------------|
+| `PYTHON`                | Path to Python 3.7+ executable.                                                 | `python3`                                            |
+| `TGZ_FILE`              | Path to the Python source code tarball.                                         | `./Python-3.4.3.tgz`                                 |
+| `GRAMMAR_FILE`          | Path to Python grammar used for parser generation.                              | `./pwz_bench/utility/transformed-python-3.4.grammar` |
+| `START_SYMBOLS`         | Space-separated list of start symbols in `$GRAMMAR_FILE`.                       | `single_input file_input eval_input`                 |
+| `GEN_FILE_DIR`          | Directory to output generated code.                                             | `./gen/`                                             |
+| `PY_FILE_DIR`           | Directory where base `.py` files are located/should be extracted to.            | `./pys/`                                             |
+| `LEX_FILE_DIR`          | Directory where lexed `.lex` files should be located.                           | `./lexes/`                                           |
+| `AST_FILE_DIR`          | Directory where parsed `.ast` output files should be saved.                     | `./parses/`                                          |
+| `BENCH_FILE_DIR`        | Directory where benchmarking `.bench` files should be saved.                    | `./bench/`                                           |
+| `GRAPHS_FILE_DIR`       | Directory where temporary graphing-related files should be saved.               | `./graphs/`                                          |
+| `OUT_FILE_DIR`          | Directory to output graphs and calculations used in the paper.                  | `./out/`                                             |
+| `BENCH_OUT`             | Name of the benchmarking executable.                                            | `$GEN_FILE_DIR/pwz_bench`                           |
+| `PARSE_OUT`             | Name of the parsing executable.                                                 | `$GEN_FILE_DIR/pwz_parse`                           |
+| `COLLATED_RESULTS_FILE` | Name of the file output by `collate` and used by `graphs` for producing graphs. | `$OUT_FILE_DIR/collated-results.csv`                 |
+| `RECURSIVE_CALLS_FILE`  | Name of the file for measuring recursive calls, used by `graphs`.               | `$GRAPHS_FILE_DIR/recursive-calls.csv`               |
+| `TIMEOUT`               | Maximum length of per-execution timeout during benchmarking in seconds.         | -1 (no maximum timeout)                              |
+| `QUOTA_FACTOR`          | The factor by which to increase the quota during subsequent runs.               | 3                                                    |
+| `MAX_QUOTA`             | The maximum allowable quota value. Benchmarks that go over this fail.           | 1000                                                 |
+| `VERIFY_PARSERS`        | Space-separated list of parsers to run for `verify` target.                     | (every parser except Menhir)                         |
+| `PARSE_PARSERS`         | Space-separated list of parsers to run for `parse` target.                      | `menhir $(VERIFY_PARSERS)`                           |
+| `BENCH_PARSERS`         | Space-separated list of parsers to run for `bench` target.                      | `$PARSE_PARSERS`                                     |
 
 The list of supported parsers (for use with the `xxx_PARSERS` parameters) is:
 
@@ -165,6 +185,9 @@ the file `./pwz_bench/utility/transformed-python-3.4.grammar`. The Python
 grammar specification as-given is heavily left-recursive, which is problematic
 for some parsers in this suite (such as Menhir, which is LR(1)). We manually
 transformed this grammar specification to be non-left-recursive.
+
+For producing graphs with a nicely-formatted PDF, we included the ACM's LaTeX
+article class, `acmart.cls`.
 
 ### Manual Interaction
 
