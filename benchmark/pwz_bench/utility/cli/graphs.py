@@ -11,10 +11,12 @@ __all__ = ['generate_graphs_pdf_file']
 GRAPHS_TEX_FILE = 'graphs.tex'
 DEFAULT_CUBIC_FILE = 'cubic.csv'
 DEFAULT_RESULTS_FILE = 'all-bench-results.csv'
+DEFAULT_CALCULATED_RESULTS_FILE = 'calculated-results.csv'
 
 
 def generate_graphs_pdf_file(graphs_dir: Path, out_dir: Path, overwrite: bool = False,
-                             cubic_file: Optional[Path] = None, results_file: Optional[Path] = None):
+                             cubic_file: Optional[Path] = None, results_file: Optional[Path] = None,
+                             calculated_results_file: Optional[Path] = None):
     graphs_tex_file = graphs_dir / GRAPHS_TEX_FILE
     if not overwrite and graphs_tex_file.is_file():
         raise RuntimeError(f"Output file {graphs_tex_file} already exists. Aborting!")
@@ -22,8 +24,12 @@ def generate_graphs_pdf_file(graphs_dir: Path, out_dir: Path, overwrite: bool = 
         cubic_file = graphs_dir / DEFAULT_CUBIC_FILE
     if results_file is None:
         results_file = graphs_dir / DEFAULT_RESULTS_FILE
+    if calculated_results_file is None:
+        calculated_results_file = graphs_dir / DEFAULT_CUBIC_FILE
     print(f"Generating LaTeX file for graphs at {graphs_tex_file}...")
-    graphs_tex_file.write_text(GRAPHS_FILE_CONTENTS.format(cubic=str(cubic_file), results=str(results_file)))
+    graphs_tex_file.write_text(GRAPHS_FILE_CONTENTS.format(cubic=str(cubic_file), results=str(results_file),
+                                                           calculated_dir=str(calculated_results_file.parent),
+                                                           calculated=calculated_results_file.name))
     graphs_pdf_file = graphs_tex_file.with_suffix('.pdf')
     graphs_pdf_file_out = out_dir / graphs_pdf_file.name
     print(f"Generating PDF of graphs at {graphs_pdf_file_out}...")
@@ -43,6 +49,8 @@ GRAPHS_FILE_CONTENTS = """\
 \\usepackage{{pgfplots}}
 \\pgfplotsset{{compat=1.15}}
 \\pgfplotsset{{lua debug=verbose}}
+\\usepackage{{pgfplotstable}}
+\\usepackage{{rotating}}
 
 \\begin{{document}}
 \\title{{Graphs for \\emph{{Parsing with Zippers (Functional Pearl)}}}}
@@ -197,6 +205,15 @@ GRAPHS_FILE_CONTENTS = """\
 \\end{{tikzpicture}}
 \\par\\end{{center}}\\vspace{{-1em}}
 \\caption{{\\label{{fig:bench:binary-vs-n-ary-zoomed-out}}Figure 27 from the paper}}
+\\end{{figure}}
+
+\\centering
+\\begin{{figure}}
+\\begin{{sideways}}
+\\centering
+\\pgfplotstabletypeset[font=\\footnotesize, fixed relative, precision=3, col sep=comma, search path={{{calculated_dir}}}, columns/Parser/.style={{verb string type}}]{{{calculated}}}
+\\end{{sideways}}
+\\caption{{Geometric means comparing performance of parsers. The left-hand parser is X times faster than the right-hand parser.}}
 \\end{{figure}}
 
 \\end{{document}}

@@ -35,6 +35,26 @@ PARSE_OUT ?= $(GEN_FILE_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
 
+# TODO items:
+#
+# [x] `make all` -> `make prepare`
+# [x] three steps: `make prepare`, `make benchmark`, `make post-process`
+# [ ] incorporate graphs and calculations into `post-process` target
+#   [x] graphs
+#   [ ] recursive calls
+#   [ ] calculations
+# [x] remove pwz-mem parser because it doesn't work
+#   - should it be removed, or just commented out?
+# [x] check necessity/naming of other `make` targets (parse, verify)
+# [ ] clarify parso version requirement
+#   - consider updating to more modern parso?
+# [ ] update top-level README with better `make` instructions
+# [x] move `out` directory to `gen`
+# [ ] output graphs and numbers to `out` directory
+#   [x] graphs
+#   [ ] calculations
+# [x] add regular `make clean` target
+
 ################################################################################
 # Top-level Targets
 #
@@ -111,6 +131,11 @@ clean-benchmark:
 clean-parse:
 	@echo Removing $(AST_FILE_DIR)...
 	-$(RM) -r $(AST_FILE_DIR)
+	@echo Removal complete.
+
+clean-out:
+	@echo Removing $(OUT_FILE_DIR)...
+	-$(RM) -r $(OUT_FILE_DIR)
 	@echo Removal complete.
 
 ################################################################################
@@ -192,7 +217,8 @@ graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
 	$(PYTHON) $(driver) graphs --overwrite --graphs-file-dir $(GRAPHS_FILE_DIR) \
 		--output-dir $(OUT_FILE_DIR) \
 		--collated-results-file $(COLLATED_RESULTS_FILE) \
-		--recursive-calls-file $(RECURSIVE_CALLS_FILE)
+		--recursive-calls-file $(RECURSIVE_CALLS_FILE) \
+		--calculated-results-file $(CALCULATED_RESULTS_FILE)
 
 ################################################################################
 # Usage-Specific Targets

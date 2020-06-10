@@ -120,7 +120,8 @@ def calculate(args):
 
 def graphs(args):
     generate_graphs_pdf_file(args.input_dir.resolve(), args.output_dir.resolve(), args.overwrite,
-                             args.recursive_calls_file.resolve(), args.collated_results_file.resolve())
+                             args.recursive_calls_file.resolve(), args.collated_results_file.resolve(),
+                             args.calculated_results_file.resolve())
 
 
 if __name__ == '__main__':
@@ -232,6 +233,8 @@ if __name__ == '__main__':
                               help="the name of the file containing collated results")
     graphs_parser.add_argument('-c', '--recursive-calls-file', type=Path, default=DEFAULT_RECURSIVE_CALLS_FILE,
                               help="the name of the file mapping the number of recursive calls to the number of tokens")
+    graphs_parser.add_argument('-C', '--calculated-results-file', type=Path, default=DEFAULT_CALCULATED_RESULTS_FILE,
+                               help="the name of the file to read calculated geometric means from")
     graphs_parser.add_argument('-o', '--overwrite', action='store_true',
                               help="delete the existing .tex file if it already exists")
     graphs_parser.set_defaults(func=graphs)

@@ -29,13 +29,14 @@ def calculate_means(collated_results_file: Path, calculated_results_file: Path, 
                 geom_mean = calculate_geometric_mean(results, lhs_parser, rhs_parser)
             geom_means[lhs_parser][rhs_parser] = geom_mean
     with open(calculated_results_file, mode='w', newline='') as out_csv:
-        fields = ['Parser', *parsers]
+        parser_fields = {parser : parser.replace('_', '-') for parser in parsers}
+        fields = ['Parser', *parser_fields.values()]
         out_writer = DictWriter(out_csv, fields)
         out_writer.writeheader()
         for lhs_parser in parsers:
-            row = {'Parser': lhs_parser}
+            row = {'Parser': parser_fields[lhs_parser]}
             for rhs_parser in parsers:
-                row[rhs_parser] = geom_means[lhs_parser][rhs_parser]
+                row[parser_fields[rhs_parser]] = geom_means[rhs_parser][lhs_parser]
             out_writer.writerow(row)
     print(f"Calculation of means complete.")
 
