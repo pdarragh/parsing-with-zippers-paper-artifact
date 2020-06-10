@@ -6,14 +6,21 @@ from typing import Iterator, List, Tuple
 
 __all__ = [
     'GREEN_CHECK', 'RED_X', 'WHITE_QUESTION', 'RED_QUESTION',
+    'FILENAME', 'TOKENS', 'SPT', 'TPR',
     'get_sorted_files_and_lengths', 'count_lines_in_file', 'find_longest_filename_length'
 ]
 
 
+# These constants contain strings for emojis used for well-formatted output.
 GREEN_CHECK = '✅'
 RED_X = '❌'
 WHITE_QUESTION = '❔'
 RED_QUESTION = '❓'
+# These constants are for titling the columns in the output CSV.
+FILENAME = 'Filename'
+TOKENS = 'Tokens'
+SPT = 'Sec/Tok'
+TPR = 'Time/Run'
 
 
 def get_sorted_files_and_lengths(file_dir: Path, pattern='*') -> List[Tuple[Path, int]]:

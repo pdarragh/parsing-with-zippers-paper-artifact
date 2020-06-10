@@ -24,8 +24,9 @@ DEFAULT_AST_DIR = THIS_DIR / 'parses'
 DEFAULT_BENCH_DIR = THIS_DIR / 'bench'
 DEFAULT_GRAPHS_DIR = THIS_DIR / 'graphs'
 DEFAULT_OUT_DIR = THIS_DIR / 'out'
-DEFAULT_COLLATED_RESULTS_FILE = DEFAULT_BENCH_DIR / 'collated-results.csv'
 DEFAULT_RECURSIVE_CALLS_FILE = DEFAULT_GRAPHS_DIR / 'recursive-calls.csv'
+DEFAULT_COLLATED_RESULTS_FILE = DEFAULT_OUT_DIR / 'collated-results.csv'
+DEFAULT_CALCULATED_RESULTS_FILE = DEFAULT_OUT_DIR / 'calculated-results.csv'
 
 PARSER_CHOICES = list(SUPPORTED_PARSERS.keys()) + [NONE, ALL]
 
@@ -109,6 +110,12 @@ def collate(args):
     parsers = process_parser_choices(args.parsers)
     collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite,
                                  args.output_file.resolve())
+
+
+def calculate(args):
+    parsers = process_parser_choices(args.parsers)
+    calculate_means(args.collated_results_file.resolve(), args.calculated_results_file.resolve(),
+                    strs_of_parsers(parsers))
 
 
 def graphs(args):
@@ -206,6 +213,15 @@ if __name__ == '__main__':
     collate_parser.add_argument('-o', '--overwrite', action='store_true',
                                 help="delete the existing output file if it already exists")
     collate_parser.set_defaults(func=collate)
+
+    calculate_parser = subparsers.add_parser('calculate')
+    calculate_parser.add_argument('-c', '--collated-results-file', type=Path, default=DEFAULT_COLLATED_RESULTS_FILE,
+                                  help="the name of the file containing collated results")
+    calculate_parser.add_argument('-C', '--calculated-results-file', type=Path, default=DEFAULT_CALCULATED_RESULTS_FILE,
+                                  help="the name of the file to write calculated results to")
+    calculate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
+                                  help="the parser to benchmark; can be given more than once or left out to run all parsers")
+    calculate_parser.set_defaults(func=calculate)
 
     graphs_parser = subparsers.add_parser('graphs')
     graphs_parser.add_argument('-I', '--input-dir', '--graphs-file-dir', type=Path, default=DEFAULT_GRAPHS_DIR,

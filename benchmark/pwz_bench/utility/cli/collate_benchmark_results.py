@@ -1,3 +1,4 @@
+from .common import *
 from collections import defaultdict
 from csv import DictReader, DictWriter
 from pathlib import Path
@@ -10,11 +11,6 @@ __all__ = ['collate_benchmarking_results']
 
 # Default name of the output file.
 DEFAULT_OUT_FILENAME = 'collated-results.csv'
-# These constants are for titling the columns in the output CSV.
-FILENAME = 'Filename'
-TOKENS = 'Tokens'
-SPT = 'Sec/Tok'
-TPR = 'Time/Run'
 # Regular expressions.
 EXTRACT_TPR_RE = re_compile(r'([\d_]+(?:\.\d+)?)\D+')
 TPR_BIGDIG_RE = re_compile(r'(\d+)\.0+')

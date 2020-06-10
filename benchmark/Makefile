@@ -19,8 +19,9 @@ AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
 GRAPHS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/graphs))
 OUT_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
-COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
 RECURSIVE_CALLS_FILE ?= $(GRAPHS_FILE_DIR)/recursive-calls.csv
+COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
+CALCULATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/calculated-results.csv
 
 
 TIMEOUT ?= -1
@@ -174,13 +175,18 @@ benchmark: $(BENCH_FILE_DIR)
 
 .PHONY: post-process collate
 
-post-process: collate graphs
+post-process: collate calculate graphs
 
 collate: $(OUT_FILE_DIR)
 	if [ ! -d "$(BENCH_FILE_DIR)" ]; then echo "$(BENCH_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
 	$(PYTHON) $(driver) collate --overwrite --bench-file-dir $(BENCH_FILE_DIR) \
 		--collated-results-file $(COLLATED_RESULTS_FILE) $(parser_opts)
+
+calculate: $(OUT_FILE_DIR)
+	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
+	$(PYTHON) $(driver) calculate --collated-results-file $(COLLATED_RESULTS_FILE) \
+		--calculated-results-file $(CALCULATED_RESULTS_FILE) $(parser_opts)
 
 graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
 	$(PYTHON) $(driver) graphs --overwrite --graphs-file-dir $(GRAPHS_FILE_DIR) \
