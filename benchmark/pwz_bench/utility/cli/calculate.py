@@ -10,6 +10,7 @@ ResultsDict = Dict[str, Dict[str, float]]
 
 
 def calculate_means(collated_results_file: Path, calculated_results_file: Path, parsers: List[str]):
+    print(f"Calculating geometric means and outputting results in {calculated_results_file}...")
     parser_columns = {parser : f'{parser} {SPT}' for parser in parsers}
     results: ResultsDict = defaultdict(dict)
     with open(collated_results_file, mode='r', newline='') as res_csv:
@@ -18,18 +19,25 @@ def calculate_means(collated_results_file: Path, calculated_results_file: Path, 
             filename = row[FILENAME]
             for parser in parsers:
                 results[parser][filename] = float(row[parser_columns[parser]])
-    geom_means: Dict[str, List[Tuple[str, float]]] = {}
+    geom_means: Dict[str, Dict[str, float]] = defaultdict(dict)
     for lhs_parser in parsers:
         rhs_parser_means = []
         for rhs_parser in parsers:
             if rhs_parser == lhs_parser:
-                continue
-            geom_mean = calculate_geometric_mean(results, lhs_parser, rhs_parser)
-            tup = (rhs_parser, geom_mean)
-            rhs_parser_means.append(tup)
-        geom_means[lhs_parser] = rhs_parser_means
-    from pprint import pprint
-    pprint(geom_means)
+                geom_mean = 1.0
+            else:
+                geom_mean = calculate_geometric_mean(results, lhs_parser, rhs_parser)
+            geom_means[lhs_parser][rhs_parser] = geom_mean
+    with open(calculated_results_file, mode='w', newline='') as out_csv:
+        fields = ['Parser', *parsers]
+        out_writer = DictWriter(out_csv, fields)
+        out_writer.writeheader()
+        for lhs_parser in parsers:
+            row = {'Parser': lhs_parser}
+            for rhs_parser in parsers:
+                row[rhs_parser] = geom_means[lhs_parser][rhs_parser]
+            out_writer.writerow(row)
+    print(f"Calculation of means complete.")
 
 
 def calculate_geometric_mean(results: ResultsDict, lhs_parser: str, rhs_parser: str) -> float:
