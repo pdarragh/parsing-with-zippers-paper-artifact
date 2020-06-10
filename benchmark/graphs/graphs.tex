@@ -12,25 +12,25 @@
 \author{Pierce Darragh}
 \orcid{0000-0002-6490-3466}
 \affiliation{
-\institution{University of Utah}
-\department{School of Computing}
-\streetaddress{50 S Central Campus Drive, Room 3190}
-\city{Salt Lake City}
-\state{Utah}
-\postcode{84112}
-\country{USA}
+  \institution{University of Utah}
+  \department{School of Computing}
+  \streetaddress{50 S Central Campus Drive, Room 3190}
+  \city{Salt Lake City}
+  \state{Utah}
+  \postcode{84112}
+  \country{USA}
 }
 \author{Michael D. Adams}
 \orcid{0000-0003-3160-6972}
 \affiliation{
-\institution{University of Michigan}
-\department[0]{Computer Science and Engineering Division}
-\department[1]{Electrical Engineering and Computer Science Department}
-\streetaddress{Bob and Betty Beyster Building, 2260 Hayward Street}
-\city{Ann Arbor}
-\state{Michigan}
-\postcode{48109-2121}
-\country{USA}
+  \institution{University of Michigan}
+  \department[0]{Computer Science and Engineering Division}
+  \department[1]{Electrical Engineering and Computer Science Department}
+  \streetaddress{Bob and Betty Beyster Building, 2260 Hayward Street}
+  \city{Ann Arbor}
+  \state{Michigan}
+  \postcode{48109-2121}
+  \country{USA}
 }
 \maketitle
 
@@ -39,8 +39,8 @@
       2020 paper \emph{Parsing with Zippers (Functional Pearl)} by Pierce
       Darragh and Michael D.~Adams.
 
-\item This document reads graph data from files named \code{cubic.csv} and
-      \code{all-bench-results.csv}, so those files should be created before
+\item This document reads graph data from files named \code{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/graphs/recursive-calls.csv} and
+      \code{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/out/collated-results.csv}, so those files should be created before
       compiling this document.
 
 \item This document should be compiled with \code{lualatex}.
@@ -49,7 +49,7 @@
 \begin{figure}
 \noindent \centering{}\noindent \begin{center}
 \pgfplotstableset{col sep=comma}
-\pgfplotstableread{cubic.csv}\benchmarkData
+\pgfplotstableread{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/graphs/recursive-calls.csv}\benchmarkData
 \begin{tikzpicture}
 \begin{axis}[
  legend entries={Measurement, Cubic fitting curve},
@@ -74,7 +74,7 @@
 \begin{figure}
 \noindent \centering{}\noindent \begin{center}
 \pgfplotstableset{col sep=comma}
-\pgfplotstableread{all-bench-results.csv}\benchmarkData
+\pgfplotstableread{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/out/collated-results.csv}\benchmarkData
 \begin{tikzpicture}[only marks]
 \begin{axis}[
  scaled ticks=false, enlarge x limits=false, xmax=27500, ymode=log,
@@ -101,7 +101,7 @@
 \begin{figure}
 \noindent \centering{}\noindent \begin{center}
 \pgfplotstableset{col sep=comma}
-\pgfplotstableread{all-bench-results.csv}\benchmarkData
+\pgfplotstableread{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/out/collated-results.csv}\benchmarkData
 \begin{tikzpicture}[only marks]
 \begin{axis}[
  scaled ticks=false, enlarge x limits=false, xmax=2750, ymode=log,
@@ -132,7 +132,7 @@
 \vspace{2em}
 \noindent \begin{center}
 \pgfplotstableset{col sep=comma}
-\pgfplotstableread{all-bench-results.csv}\benchmarkData
+\pgfplotstableread{/Users/pdarragh/Development/Research/parsing-with-zippers-paper-artifact/benchmark/out/collated-results.csv}\benchmarkData
 \begin{tikzpicture}[only marks]
 \begin{axis}[
  scaled ticks=false, enlarge x limits=false, xmax=500, ymode=log, % 27500

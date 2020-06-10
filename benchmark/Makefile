@@ -17,6 +17,11 @@ PY_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/pys))
 LEX_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/lexes))
 AST_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/parses))
 BENCH_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/bench))
+OUT_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/out))
+COLLATED_RESULTS_FILE ?= $(OUT_FILE_DIR)/collated-results.csv
+GRAPHS_FILE_DIR ?= $(strip $(abspath $(mkfile_abs_dir)/graphs))
+RECURSIVE_CALLS_FILE ?= $(GRAPHS_FILE_DIR)/recursive-calls.csv
+
 
 TIMEOUT ?= -1
 QUOTA_FACTOR ?= 3
@@ -28,6 +33,21 @@ BENCH_OUT ?= $(GEN_DIR)/pwz_bench
 PARSE_OUT ?= $(GEN_DIR)/pwz_parse
 export BENCH_OUT
 export PARSE_OUT
+
+# TODO items:
+#
+# [x] `make all` -> `make prepare`
+# [x] three steps: `make prepare`, `make benchmark`, `make post-process`
+# [ ] incorporate graphs and calculations into `post-process` target
+# [x] remove pwz-mem parser because it doesn't work
+#   - should it be removed, or just commented out?
+# [x] check necessity/naming of other `make` targets (parse, verify)
+# [ ] clarify parso version requirement
+#   - consider updating to more modern parso?
+# [ ] update top-level README with better `make` instructions
+# [x] move `out` directory to `gen`
+# [ ] output graphs and numbers to `out` directory
+# [x] add regular `make clean` target
 
 ################################################################################
 # Top-level Targets
@@ -57,6 +77,12 @@ $(BENCH_FILE_DIR):
 	$(MKDIR_P) $@
 
 $(AST_FILE_DIR):
+	$(MKDIR_P) $@
+
+$(OUT_FILE_DIR):
+	$(MKDIR_P) $@
+
+$(GRAPHS_FILE_DIR):
 	$(MKDIR_P) $@
 
 ################################################################################
@@ -91,7 +117,7 @@ clean-lex:
 	-$(RM) -r $(LEX_FILE_DIR)
 	@echo Removal complete.
 
-clean-bench:
+clean-benchmark:
 	@echo Removing $(BENCH_FILE_DIR)...
 	-$(RM) -r $(BENCH_FILE_DIR)
 	@echo Removal complete.
@@ -111,6 +137,10 @@ clean-parse:
 .PHONY: prepare extract lex generate compile
 
 prepare: extract lex generate compile
+	@echo ""
+	@echo "****************************************************************"
+	@echo "Preparation complete. Now ready to run benchmarks."
+	@echo "To run benchmarks, do `make benchmark`."
 
 extract: $(PY_FILE_DIR)
 	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PY_FILE_DIR)...
@@ -159,12 +189,19 @@ benchmark: $(BENCH_FILE_DIR)
 
 .PHONY: post-process collate
 
-post-process: collate
+post-process: collate graphs
 
-collate:
+collate: $(OUT_FILE_DIR)
 	if [ ! -d "$(BENCH_FILE_DIR)" ]; then echo "$(BENCH_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
-	$(PYTHON) $(driver) collate --overwrite --bench-file-dir $(BENCH_FILE_DIR) $(parser_opts)
+	$(PYTHON) $(driver) collate --overwrite --bench-file-dir $(BENCH_FILE_DIR) \
+		--collated-results-file $(COLLATED_RESULTS_FILE) $(parser_opts)
+
+graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
+	$(PYTHON) $(driver) graphs --overwrite --graphs-file-dir $(GRAPHS_FILE_DIR) \
+		--output-dir $(OUT_FILE_DIR) \
+		--collated-results-file $(COLLATED_RESULTS_FILE) \
+		--recursive-calls-file $(RECURSIVE_CALLS_FILE)
 
 ################################################################################
 # Usage-Specific Targets

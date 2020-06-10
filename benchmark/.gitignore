@@ -1,5 +1,6 @@
+bench/
 gen/
 lexes/
+out/
 parses/
 pys/
-bench/

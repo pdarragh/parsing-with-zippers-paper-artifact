@@ -22,7 +22,10 @@ DEFAULT_PY_DIR = THIS_DIR / 'pys'
 DEFAULT_LEX_DIR = THIS_DIR / 'lexes'
 DEFAULT_AST_DIR = THIS_DIR / 'parses'
 DEFAULT_BENCH_DIR = THIS_DIR / 'bench'
-DEFAULT_COLLATE_FILE = DEFAULT_BENCH_DIR / 'collated-results.csv'
+DEFAULT_GRAPHS_DIR = THIS_DIR / 'graphs'
+DEFAULT_OUT_DIR = THIS_DIR / 'out'
+DEFAULT_COLLATED_RESULTS_FILE = DEFAULT_BENCH_DIR / 'collated-results.csv'
+DEFAULT_RECURSIVE_CALLS_FILE = DEFAULT_GRAPHS_DIR / 'recursive-calls.csv'
 
 PARSER_CHOICES = list(SUPPORTED_PARSERS.keys()) + [NONE, ALL]
 
@@ -104,7 +107,13 @@ def benchmark(args):
 
 def collate(args):
     parsers = process_parser_choices(args.parsers)
-    collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite, args.output_file.resolve())
+    collate_benchmarking_results(args.input_dir.resolve(), strs_of_parsers(parsers), args.overwrite,
+                                 args.output_file.resolve())
+
+
+def graphs(args):
+    generate_graphs_pdf_file(args.input_dir.resolve(), args.output_dir.resolve(), args.overwrite,
+                             args.recursive_calls_file.resolve(), args.collated_results_file.resolve())
 
 
 if __name__ == '__main__':
@@ -190,13 +199,26 @@ if __name__ == '__main__':
     collate_parser = subparsers.add_parser('collate')
     collate_parser.add_argument('-I', '--input-dir', '--bench-file-dir', type=Path, default=DEFAULT_BENCH_DIR,
                                 help="the directory to retrieve completed benchmarking results from")
-    collate_parser.add_argument('-O', '--output-file', '--collated-results-file', type=Path, default=DEFAULT_COLLATE_FILE,
+    collate_parser.add_argument('-O', '--output-file', '--collated-results-file', type=Path, default=DEFAULT_COLLATED_RESULTS_FILE,
                                 help="the name of the file to write collated results to")
     collate_parser.add_argument('-p', '--parser', choices=PARSER_CHOICES, action='append', default=[], dest='parsers',
                                 help="the parser to benchmark; can be given more than once or left out to run all parsers")
     collate_parser.add_argument('-o', '--overwrite', action='store_true',
                                 help="delete the existing output file if it already exists")
     collate_parser.set_defaults(func=collate)
+
+    graphs_parser = subparsers.add_parser('graphs')
+    graphs_parser.add_argument('-I', '--input-dir', '--graphs-file-dir', type=Path, default=DEFAULT_GRAPHS_DIR,
+                              help="the directory to find and place graphing-related files in")
+    graphs_parser.add_argument('-O', '--output-dir', type=Path, default=DEFAULT_OUT_DIR,
+                               help="the directory to output the PDF file to")
+    graphs_parser.add_argument('-r', '--collated-results-file', type=Path, default=DEFAULT_COLLATED_RESULTS_FILE,
+                              help="the name of the file containing collated results")
+    graphs_parser.add_argument('-c', '--recursive-calls-file', type=Path, default=DEFAULT_RECURSIVE_CALLS_FILE,
+                              help="the name of the file mapping the number of recursive calls to the number of tokens")
+    graphs_parser.add_argument('-o', '--overwrite', action='store_true',
+                              help="delete the existing .tex file if it already exists")
+    graphs_parser.set_defaults(func=graphs)
 
     parsed_args = parser.parse_args()
     parsed_args.func(parsed_args)
