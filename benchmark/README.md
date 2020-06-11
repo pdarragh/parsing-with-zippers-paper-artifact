@@ -63,6 +63,18 @@ All builds and processing can be performed using the top-level `Makefile`.
 Targets and command-line parameters are explained further below, but a brief
 overview is given here.
 
+The short version is:
+
+```
+$ make prepare
+$ make benchmark
+$ make post-process
+```
+
+But we explain these steps more below.
+
+### Running, Explained
+
 To generate and compile the various parsers, do:
 
 ```
