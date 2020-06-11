@@ -42,7 +42,7 @@ def generate_graphs_pdf_file(graphs_dir: Path, out_dir: Path, overwrite: bool = 
     print(f"Generating PDF of graphs at {results_pdf_file}...")
     prev_dir = getcwd()
     chdir(graphs_dir)
-    run(['luatex', graphs_tex_file])
+    run(['lualatex', graphs_tex_file])
     chdir(prev_dir)
     move_file(graphs_pdf_file, results_pdf_file)
 
