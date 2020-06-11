@@ -80,45 +80,56 @@ $(GRAPHS_FILE_DIR):
 # These targets are just for cleaning.
 # Note: They are highly destructive!
 
-.PHONY: clean clean-all clean-light clean-generate clean-py clean-lex clean-bench clean-parse
+.PHONY: clean clean-all clean-prepare clean-post-process \
+				clean-extract clean-lex clean-generate clean-compile clean-benchmark \
+				clean-graphs clean-out clean-parse
 
-clean: clean-light
+clean: clean-compile
 
-clean-all: clean-generate clean-py clean-lex clean-parse clean-bench
+clean-all: clean-prepare clean-benchmark clean-post-process
 
-clean-light:
-	@echo Lightly cleaning...
-	-$(MAKE) -C $(GEN_FILE_DIR) clean
-	@echo Clean complete.
+clean-prepare: clean-extract clean-lex clean-generate
 
-clean-generate:
-	@echo Removing $(GEN_FILE_DIR)...
-	-$(RM) -r $(GEN_FILE_DIR)
-	@echo Removal complete.
+clean-post-process: clean-graphs clean-out
 
-clean-py:
-	@echo Removing $(PY_FILE_DIR)...
-	-$(RM) -r $(PY_FILE_DIR)
+clean-extract:
+	@echo Removing $(PY_FILE_DIR)/\*.py ...
+	-$(RM) -r $(PY_FILE_DIR)/*.py
 	@echo Removal complete.
 
 clean-lex:
-	@echo Removing $(LEX_FILE_DIR)...
-	-$(RM) -r $(LEX_FILE_DIR)
+	@echo Removing $(LEX_FILE_DIR)/\*.lex ...
+	-$(RM) -r $(LEX_FILE_DIR)/*.lex
 	@echo Removal complete.
+
+clean-generate:
+	@echo Removing $(GEN_FILE_DIR)/\* ...
+	-$(RM) -r $(GEN_FILE_DIR)/*
+	@echo Removal complete.
+
+clean-compile:
+	@echo Lightly cleaning generated files...
+	-$(MAKE) -C $(GEN_FILE_DIR) clean
+	@echo Clean complete.
 
 clean-benchmark:
-	@echo Removing $(BENCH_FILE_DIR)...
-	-$(RM) -r $(BENCH_FILE_DIR)
+	@echo Removing $(BENCH_FILE_DIR)/\* ...
+	-$(RM) -r $(BENCH_FILE_DIR)/*
 	@echo Removal complete.
 
-clean-parse:
-	@echo Removing $(AST_FILE_DIR)...
-	-$(RM) -r $(AST_FILE_DIR)
+clean-graphs:
+	@echo Removing $(GRAPHS_FILE_DIR)/graphs.\{aux,log,out,tex\} ...
+	-$(RM) $(GRAPHS_FILE_DIR)/graphs.{aux,log,out,tex}
 	@echo Removal complete.
 
 clean-out:
-	@echo Removing $(OUT_FILE_DIR)...
-	-$(RM) -r $(OUT_FILE_DIR)
+	@echo Removing $(OUT_FILE_DIR)/\* ...
+	-$(RM) -r $(OUT_FILE_DIR)/*
+	@echo Removal complete.
+
+clean-parse:
+	@echo Removing $(AST_FILE_DIR)/\* ...
+	-$(RM) -r $(AST_FILE_DIR)/*
 	@echo Removal complete.
 
 ################################################################################
@@ -180,6 +191,12 @@ benchmark: $(BENCH_FILE_DIR)
 
 ################################################################################
 # Post-Processing Targets
+#
+# These targets are used to take the benchmarking results and generate the
+# graphs and computations used in the paper.
+#
+# The paper's results can also be generated similarly, because the results used
+# in the paper are stored in $(PAPER_RESULTS_FILE).
 
 .PHONY: post-process collate calculate graphs paper-graphs
 

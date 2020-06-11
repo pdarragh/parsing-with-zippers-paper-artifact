@@ -134,31 +134,35 @@ and the parameters they can interact with. Parameters are explained in the next
 section. If a target's summary says that it runs another target, the second
 target's parameters can also be used with the first target.
 
-| Target Name       | Summary                                                                                               | Parameters Used                                                                       |
-|-------------------|-------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
-| `default`         | Runs `prepare`.                                                                                       |                                                                                       |
-| `all`             | Runs `clean-all`, `prepare`, `benchmark`.                                                             |                                                                                       |
-| `clean`           | Runs `clean-light`.                                                                                   |                                                                                       |
-| `clean-light`     | Runs the `clean` target in `$GEN_FILE_DIR/Makefile`.                                                  | `$GEN_FILE_DIR`                                                                       |
-| `clean-generate`  | Deletes `$GEN_FILE_DIR`.                                                                              | `$GEN_FILE_DIR`                                                                       |
-| `clean-py`        | Deletes `$PY_FILE_DIR`.                                                                               | `$PY_FILE_DIR`                                                                        |
-| `clean-lex`       | Deletes `$LEX_FILE_DIR`.                                                                              | `$LEX_FILE_DIR`                                                                       |
-| `clean-benchmark` | Deletes `$BENCH_FILE_DIR`.                                                                            | `$BENCH_FILE_DIR`                                                                     |
-| `clean-parse`     | Deletes `$AST_FILE_DIR`.                                                                              | `$AST_FILE_DIR`                                                                       |
-| `clean-all`       | Runs `clean-generate`, `clean-py`, `clean-lex`, `clean-parse`, and `clean-bench`.                     |                                                                                       |
-| `prepare`         | Runs `extract`, `lex`, `generate`, and `compile`.                                                     |                                                                                       |
-| `extract`         | Extracts the necessary files from the Python source code tarball `$TGZ_FILE` into `$PY_FILE_DIR`.     | `$TGZ_FILE`, `$PY_FILE_DIR`                                                           |
-| `lex`             | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR`.             | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`                                             |
-| `generate`        | Generates all the files needed for compiling the executables. Code will be placed in `$GEN_FILE_DIR`. | `$GEN_FILE_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                                          |
-| `compile`         | Compiles the executables `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).              | `$BENCH_OUT`, `$PARSE_OUT`                                                            |
-| `benchmark`       | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                       | `$LEX_FILE_DIR`, `$BENCH_FILE_DIR`, `$BENCH_OUT`                                      |
-| `post-process`    | Runs `collate` and `graphs`.                                                                          |                                                                                       |
-| `collate`         | Collates the results of `benchmark` into a single `.csv` file, `$COLLATED_RESULTS_FILE`.              | `$COLLATED_RESULTS_FILE`                                                              |
-| `graphs`          | Produces a PDF of the graphs used in the paper.                                                       | `GRAPHS_FILE_DIR`, `$OUT_FILE_DIR`, `$COLLATED_RESULTS_FILE`, `$RECURSIVE_CALLS_FILE` |
-| `paper-graphs`    | Produces a PDF like `graphs`, but using the data we used for producing the paper.                     |                                                                                       |
-| `parse`           | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.         | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`                                        |
-| `verify`          | Verifies all existing `.ast` files against the Menhir baseline.                                       | `$AST_FILE_DIR`                                                                       |
-| `compile-profile` | Like `compile`, but includes instrumentation for profiling.                                           | (same as `compile`)                                                                   |
+| Target Name          | Summary                                                                                               | Parameters Used                                                                       |
+|----------------------|-------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------|
+| `default`            | Runs `prepare`.                                                                                       |                                                                                       |
+| `all`                | Runs `clean-all`, `prepare`, `benchmark`.                                                             |                                                                                       |
+| `clean`              | Runs `clean-compile`.                                                                                 |                                                                                       |
+| `clean-all`          | Runs `clean-prepare`, `clean-benchmark`, and `clean-post-process`.                                    |                                                                                       |
+| `clean-prepare`      | Runs `clean-extract`, `clean-lex`, and `clean-generate`.                                              |                                                                                       |
+| `clean-post-process` | Runs `clean-out`.                                                                                     |                                                                                       |
+| `clean-extract`      | Deletes all `.py` files in `$PY_FILE_DIR`.                                                            | `$PY_FILE_DIR`                                                                        |
+| `clean-lex`          | Deletes all `.lex` files in `$LEX_FILE_DIR`.                                                          | `$LEX_FILE_DIR`                                                                       |
+| `clean-generate`     | Deletes all files in `$GEN_FILE_DIR`.                                                                 | `$GEN_FILE_DIR`                                                                       |
+| `clean-compile`      | Runs the `clean` target in `$GEN_FILE_DIR/Makefile`.                                                  | `$GEN_FILE_DIR`                                                                       |
+| `clean-benchmark`    | Deletes all `.bench` files in `$BENCH_FILE_DIR`.                                                      | `$BENCH_FILE_DIR`                                                                     |
+| `clean-graphs`       | Deletes unneeded files in `$GRAPHS_FILE_DIR`.                                                         | `$GRAPHS_FILE_DIR`                                                                    |
+| `clean-out`          | Deletes all files in `$OUT_FILE_DIR`.                                                                 | `$OUT_FILE_DIR`                                                                       |
+| `clean-parse`        | Deletes all files in `$AST_FILE_DIR`.                                                                 | `$AST_FILE_DIR`                                                                       |
+| `prepare`            | Runs `extract`, `lex`, `generate`, and `compile`.                                                     |                                                                                       |
+| `extract`            | Extracts the necessary files from the Python source code tarball `$TGZ_FILE` into `$PY_FILE_DIR`.     | `$TGZ_FILE`, `$PY_FILE_DIR`                                                           |
+| `lex`                | Lexes all `.py` files found in `$PY_FILE_DIR` and outputs the results to `$LEX_FILE_DIR`.             | `$PY_FILE_DIR`, `$LEX_FILE_DIR`, `PYTHON`                                             |
+| `generate`           | Generates all the files needed for compiling the executables. Code will be placed in `$GEN_FILE_DIR`. | `$GEN_FILE_DIR`, `$PYTHON`, `$GRAMMAR_FILE`.                                          |
+| `compile`            | Compiles the executables `$BENCH_OUT` (for benchmarking) and `$PARSE_OUT` (for parsing).              | `$BENCH_OUT`, `$PARSE_OUT`                                                            |
+| `benchmark`          | Runs benchmarks over all `.lex` files found in `$LEX_FILE_DIR`.                                       | `$LEX_FILE_DIR`, `$BENCH_FILE_DIR`, `$BENCH_OUT`                                      |
+| `post-process`       | Runs `collate` and `graphs`.                                                                          |                                                                                       |
+| `collate`            | Collates the results of `benchmark` into a single `.csv` file, `$COLLATED_RESULTS_FILE`.              | `$COLLATED_RESULTS_FILE`                                                              |
+| `graphs`             | Produces a PDF of the graphs used in the paper.                                                       | `GRAPHS_FILE_DIR`, `$OUT_FILE_DIR`, `$COLLATED_RESULTS_FILE`, `$RECURSIVE_CALLS_FILE` |
+| `paper-graphs`       | Produces a PDF like `graphs`, but using the data we used for producing the paper.                     |                                                                                       |
+| `parse`              | Parses all `.lex` files found in `$LEX_FILE_DIR` into `.ast` files placed in `$AST_FILE_DIR`.         | `$LEX_FILE_DIR`, `$AST_FILE_DIR`, `$PARSE_OUT`                                        |
+| `verify`             | Verifies all existing `.ast` files against the Menhir baseline.                                       | `$AST_FILE_DIR`                                                                       |
+| `compile-profile`    | Like `compile`, but includes instrumentation for profiling.                                           | (same as `compile`)                                                                   |
 
 ### Parameters
 
