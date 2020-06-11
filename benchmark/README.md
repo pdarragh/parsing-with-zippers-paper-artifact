@@ -54,8 +54,8 @@ installed by performing `opam install core core_bench menhir dypgen`.
 
 ### PDF Requirements
 
-The PDF generation requires LuaTeX. Any modern version of LuaTeX should be
-sufficient. We used version 1.10.0.
+The PDF generation requires LuaTeX. Any modern version of LuaTeX with a full
+TeXLive installation should be sufficient. We used version 1.10.0.
 
 ## Running
 
