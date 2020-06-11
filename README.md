@@ -96,7 +96,10 @@ rm get-pip.py
 pip3 install parso==0.4.0
 
 # Install LuaLaTex for generating the results PDF.
-sudo apt install luatex texlive-full -y
+sudo apt install luatex texlive-luatex -y
+tlmgr init-usertree
+tlmgr option repository ftp://tug.org/historic/systems/texlive/2017/tlnet-final
+tlmgr install xstring iftex totpages environ trimspaces ncctools comment pgf pgfplots
 
 # Clone the artifact repository from GitHub.
 git clone https://github.com/pdarragh/parsing-with-zippers-paper-artifact.git
