@@ -205,10 +205,12 @@ graphs: $(GRAPHS_FILE_DIR) $(COLLATED_RESULTS_FILE)
 		--output-file $(RESULTS_PDF_FILE)
 
 paper-graphs: $(GRAPHS_FILE_DIR) $(OUT_FILE_DIR)
-	export COLLATED_RESULTS_FILE=PAPER_RESULTS_FILE
-	export CALCULATED_RESULTS_FILE=PAPER_CALCULATED_RESULTS_FILE
-	$(MAKE) calculate --no-print-directory
-	$(MAKE) graphs --no-print-directory
+	COLLATED_RESULTS_FILE=PAPER_RESULTS_FILE \
+		CALCULATED_RESULTS_FILE=PAPER_CALCULATED_RESULTS_FILE \
+		$(MAKE) calculate --no-print-directory
+	COLLATED_RESULTS_FILE=PAPER_RESULTS_FILE \
+		CALCULATED_RESULTS_FILE=PAPER_CALCULATED_RESULTS_FILE \
+		$(MAKE) graphs --no-print-directory
 
 ################################################################################
 # Usage-Specific Targets
