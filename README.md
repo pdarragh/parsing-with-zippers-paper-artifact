@@ -95,6 +95,9 @@ python3 get-pip.py --prefix /usr/local/
 rm get-pip.py
 pip3 install parso==0.4.0
 
+# Install LuaLaTex for generating the results PDF.
+sudo apt install luatex
+
 # Clone the artifact repository from GitHub.
 git clone https://github.com/pdarragh/parsing-with-zippers-paper-artifact.git
 ```
