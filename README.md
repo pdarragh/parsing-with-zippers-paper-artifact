@@ -70,6 +70,9 @@ this section could be copied into a shell script and run with super-user
 privileges, but we do not recommend this.
 
 ```
+####################
+# SET UP UBUNTU
+##
 # Update the list of packages.
 sudo apt update
 # Normally, one would perform a system upgrade after this step to ensure all
@@ -78,16 +81,26 @@ sudo apt update
 # the following line and execute it:
 #sudo apt upgrade -y
 
+####################
+# SET UP OCAML
+##
 # Install the OCaml runtime and additional dependencies.
 sudo apt install opam -y
 opam init  # Accept the prompts as you choose. We used y and y as our responses.
+# Now we install OCaml version 4.05.
+#   NOTE: On some more recent Ubuntu installations, this will fail.
+#         If this happens, use `opam switch create pwz 4.05` instead.
 opam switch create pwz ocaml-system.4.05.0
 eval $(opam env)
-# Install needed libraries. Note that there is one step early on, which says (in
-# our instance) "ocaml-secondary-compiler: make world.opt" that appears as
-# though nothing is happening, but things are happening! Leave it be!
+# Install needed OCaml libraries.
+# NOTE: There is one step early on, which says (in our instance)
+#       "ocaml-secondary-compiler: make world.opt" that appears as though
+#       nothing is happening, but things are happening! Leave it be!
 opam install core core_bench menhir dypgen -y
 
+####################
+# SET UP PYTHON
+##
 # Update Python 3, install pip, and install additional dependencies.
 sudo apt install python3-distutils -y
 wget https://bootstrap.pypa.io/get-pip.py
@@ -95,12 +108,25 @@ python3 get-pip.py --prefix /usr/local/
 rm get-pip.py
 pip3 install parso==0.4.0
 
-# Install LuaLaTex for generating the results PDF.
+####################
+# SET UP LUALATEX
+##
+# Install LuaLaTeX for generating the results PDF.
 sudo apt install luatex texlive-luatex -y
+# Install additional needed libraries.
+# NOTE: If you have the space (~4GB), we would recommend instead doing
+#       `sudo apt install texlive-full` as this will install all the libraries
+#       and options to render the document better. The QEMU VM is limited in
+$       size, so we opted to manually install only the bare minimum.
 tlmgr init-usertree
 tlmgr option repository ftp://tug.org/historic/systems/texlive/2017/tlnet-final
 tlmgr install xstring iftex totpages environ trimspaces ncctools comment pgf pgfplots
 
+####################
+# SET UP ARTIFACT
+##
 # Clone the artifact repository from GitHub.
 git clone https://github.com/pdarragh/parsing-with-zippers-paper-artifact.git
+cd parsing-with-zippers-paper-artifact
+cat README.md
 ```
