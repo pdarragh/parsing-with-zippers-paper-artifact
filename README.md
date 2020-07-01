@@ -85,13 +85,33 @@ sudo apt update
 # SET UP OCAML
 ##
 # Install the OCaml runtime and additional dependencies.
-sudo apt install opam -y
+sudo apt install m4 opam -y
 opam init  # Accept the prompts as you choose. We used y and y as our responses.
-# Now we install OCaml version 4.05.
-#   NOTE: On some more recent Ubuntu installations, this will fail.
-#         If this happens, use `opam switch create pwz 4.05` instead.
+# There can be some divergence here depending on your environment. Check the
+# ocaml version:
+ocaml --version
+# If the version is 4.05.0, follow instructions labeled A. If it's greater,
+# follow instructions labeled B. If it's lower, you'll have to figure it out for
+# yourself, unfortunately.
+# After following A or B, reconvene at C.
+##########
+# A) OCAML 4.05.0
+##
+# We will just use the current environment.
+# Initialize the opam installation.
+eval `opam config env`
+##########
+# B) OCAML > 4.05.0
+##
+# We install OCaml version 4.05.
+#   NOTE: In some environments, this can fail with a note that the switch
+#         couldn't be found. If this happens, use
+#         `opam switch create pwz 4.05.0`
 opam switch create pwz ocaml-system.4.05.0
 eval $(opam env)
+##########
+# C) OCAML LIBRARIES
+##
 # Install needed OCaml libraries.
 # NOTE: There is one step early on, which says (in our instance)
 #       "ocaml-secondary-compiler: make world.opt" that appears as though
