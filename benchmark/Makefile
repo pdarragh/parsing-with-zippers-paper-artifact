@@ -145,7 +145,7 @@ prepare: extract lex generate compile
 	@echo ""
 	@echo "****************************************************************"
 	@echo "Preparation complete. Now ready to run benchmarks."
-	@echo "To run benchmarks, do `make benchmark`."
+	@echo "To run benchmarks, do \`make benchmark\`."
 
 extract: $(PY_FILE_DIR)
 	@echo Extracting .py files from $(TGZ_FILE) and moving them to $(PY_FILE_DIR)...
@@ -183,7 +183,7 @@ $(PARSE_OUT): $(GEN_MAKEFILE)
 .PHONY: benchmark
 
 benchmark: $(BENCH_FILE_DIR)
-	if [ ! -f "$(BENCH_OUT)" ]; then echo "$(BENCH_OUT) executable does not exist! Try running `make prepare` first!"; exit 1; fi
+	if [ ! -f "$(BENCH_OUT)" ]; then echo "$(BENCH_OUT) executable does not exist! Try running \`make prepare\` first!"; exit 1; fi
 	if [ ! -d "$(LEX_FILE_DIR)" ]; then echo "$(LEX_FILE_DIR) does not exist!"; exit 1; fi
 	$(eval lex_files := $(wildcard $(LEX_FILE_DIR)/*.lex))
 	$(eval parser_opts := $(patsubst %,-p %,$(BENCH_PARSERS)))
