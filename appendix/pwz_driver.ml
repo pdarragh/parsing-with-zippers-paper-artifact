@@ -12,6 +12,7 @@ let init_zipper (e : exp) : zipper =
 let unwrap_top_zipper ((e', m) : zipper) : exp =
   match m.parents with
   | [SeqC ({ parents = [TopC] }, s_bottom, [e; _], [])] -> e
+  | _ -> raise (Failure "Invalid top zipper encountered.")
 
 let parse (ts : tok list) (e : exp) : exp list =
   let rec parse' (p : pos) (ts : tok list) (z : zipper) : zipper list =

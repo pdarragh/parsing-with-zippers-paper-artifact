@@ -33,6 +33,7 @@ let derive (p : pos) (t : tok) ((e', m) : zipper) : zipper list =
     | AltC (m)                       -> if p == m.end_pos
                                         then match m.result.e' with
                                              | Alt (es) -> es := e :: !es; []
+                                             | _        -> raise (Failure "Did not find Alt where one was expected.")
                                         else d_u (Alt (ref [e])) m
 
   in d_u e' m

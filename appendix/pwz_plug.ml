@@ -15,6 +15,7 @@ let plug (p : pos) (zs : zipper list) : exp list =
     | AltC (m)                -> if p == m.end_pos
                                  then match m.result.e' with
                                       | Alt (es) -> es := e :: !es; []
+                                      | _ -> raise (Failure "Did not find Alt where one was expected.")
                                  else pl (Alt (ref [e])) m
 
   in List.concat (List.map (fun (e', m) -> pl e' m) zs)
