@@ -69,6 +69,10 @@ well as to help anybody in installing these packages manually. Hypothetically,
 this section could be copied into a shell script and run with super-user
 privileges, but we do not recommend this.
 
+NOTE that these instructions were tested on Ubuntu 20.04 (LTS) in a Digital
+Ocean droplet. We do not guarantee that these instructions will work on all
+platforms.
+
 ```
 ####################
 # SET UP UBUNTU
@@ -87,26 +91,13 @@ sudo apt update
 # Install the OCaml runtime and additional dependencies.
 sudo apt install m4 opam -y
 opam init  # Accept the prompts as you choose. We used y and y as our responses.
-# There can be some divergence here depending on your environment. Check the
-# ocaml version:
-ocaml --version
-# If the version is 4.05.0, follow instructions labeled A. If it's greater,
-# follow instructions labeled B. If it's lower, you'll have to figure it out for
-# yourself, unfortunately.
-# After following A or B, reconvene at C.
-##########
-# A) OCAML 4.05.0
-##
-# We will just use the current environment.
-# Initialize the opam installation.
-eval `opam config env`
-##########
-# B) OCAML > 4.05.0
-##
+eval $(opam env)
 # We install OCaml version 4.05.
 #   NOTE: In some environments, this can fail with a note that the switch
 #         couldn't be found. If this happens, use
 #         `opam switch create pwz 4.05.0`
+# NOTE: There is a step early on, which says (in our instance)
+#       "ocaml-base-compiler: make world.opt", that takes a very long time.
 opam switch create pwz ocaml-system.4.05.0
 eval $(opam env)
 ##########
@@ -114,8 +105,7 @@ eval $(opam env)
 ##
 # Install needed OCaml libraries.
 # NOTE: There is one step early on, which says (in our instance)
-#       "ocaml-secondary-compiler: make world.opt" that appears as though
-#       nothing is happening, but things are happening! Leave it be!
+#       "ocaml-secondary-compiler: make world.opt", that takes a very long time.
 opam install core core_bench menhir dypgen -y
 
 ####################
@@ -124,7 +114,7 @@ opam install core core_bench menhir dypgen -y
 # Update Python 3, install pip, and install additional dependencies.
 sudo apt install python3-distutils -y
 wget https://bootstrap.pypa.io/get-pip.py
-python3 get-pip.py --prefix /usr/local/
+sudo python3 get-pip.py --prefix /usr/local/
 rm get-pip.py
 pip3 install parso==0.4.0
 
@@ -132,13 +122,14 @@ pip3 install parso==0.4.0
 # SET UP LUALATEX
 ##
 # Install LuaLaTeX for generating the results PDF.
-sudo apt install luatex texlive-luatex -y
+sudo apt install luatex texlive-luatex xzdec -y
 # Install additional needed libraries.
-# NOTE: If you have the space (~4GB), we would recommend instead doing
+# NOTE: If you have the space (~6GB), we would recommend instead doing
 #       `sudo apt install texlive-full` as this will install all the libraries
 #       and options to render the document better. The QEMU VM is limited in
 $       size, so we opted to manually install only the bare minimum.
-tlmgr init-usertree
+tlmgr init-usertree  # Sometimes this will say "Cannot determing type of tlpdb".
+                     # Just run it again and it should work!
 tlmgr option repository ftp://tug.org/historic/systems/texlive/2017/tlnet-final
 tlmgr install xstring iftex totpages environ trimspaces ncctools comment pgf pgfplots
 
