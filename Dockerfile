@@ -13,7 +13,7 @@ RUN \
     sudo apt update && sudo apt install -y \
     texlive-full \
     xzdec \
-    git -y \
+    git \
     build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev \
     && sudo rm -rf /var/lib/apt/lists/*
 
