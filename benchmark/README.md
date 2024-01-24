@@ -37,7 +37,7 @@ To install OCaml 4.05.0, first install Opam using your package manger (e.g.,
 `opam switch create pwz ocaml-system.4.05.0`.
 
 In addition, the following external dependencies are needed. They can all be
-installed by performing `opam install core core_bench menhir dypgen`.
+installed by performing `opam install core.v0.11.3 core_bench.v0.11.0 menhir.20200211 dypgen.20120619-1 -y`.
 
 - [Core](https://ocaml.janestreet.com/ocaml-core/latest/doc/core/index.html),
   v 0.11.3
