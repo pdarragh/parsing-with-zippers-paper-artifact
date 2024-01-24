@@ -106,17 +106,20 @@ eval $(opam env)
 # Install needed OCaml libraries.
 # NOTE: There is one step early on, which says (in our instance)
 #       "ocaml-secondary-compiler: make world.opt", that takes a very long time.
-opam install core core_bench menhir dypgen -y
+opam install core.v0.11.3 core_bench.v0.11.0 menhir.20200211 dypgen.20120619-1 -y
 
 ####################
 # SET UP PYTHON
 ##
-# Update Python 3, install pip, and install additional dependencies.
-sudo apt install python3-distutils -y
-wget https://bootstrap.pypa.io/get-pip.py
-sudo python3 get-pip.py --prefix /usr/local/
-rm get-pip.py
-pip3 install parso==0.4.0
+# Install build requirements for Python 3.7.17 with pip.
+# Then compile it from source and install additional dependencies.
+sudo apt install build-essential zlib1g-dev libncurses5-dev libgdbm-dev libnss3-dev libssl-dev libsqlite3-dev libreadline-dev libffi-dev curl libbz2-dev -y
+curl -o Python-3.7.17.tar.xz https://www.python.org/ftp/python/3.7.17/Python-3.7.17.tar.xz
+tar -xf Python-3.7.17.tar.xz
+cd Python-3.7.17 && ./configure --enable-optimizations --enable-shared --with-ensurepip=install && make -j 4 && sudo make install
+sudo ldconfig /usr/local/share/python3.7
+sudo ln -s /usr/bin/python3 /usr/local/share/python3.7
+python3 -m pip install --user parso==0.4.0
 
 ####################
 # SET UP LUALATEX
