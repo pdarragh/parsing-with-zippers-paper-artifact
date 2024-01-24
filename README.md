@@ -144,3 +144,10 @@ git clone https://github.com/pdarragh/parsing-with-zippers-paper-artifact.git
 cd parsing-with-zippers-paper-artifact
 cat README.md
 ```
+
+## Dockerfile
+
+A Dockerfile is provided that creates an environment with the above packages installed, ready for running the benchmarks.
+You can build an image yourself by cloning this repository and then running `sudo docker build -t zippers-artifact .` from within the repository root.
+After the build has finished, you can open up this environment by running `sudo docker run -i -t zippers-artifact` and you'll be greeted with a ready to go Bash inside the artifact directory.
+
